@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="433.0" prefWidth="439.0" style="-fx-background-color: #D7CEC7;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.ServerFormController">
+   <children>
+      <Label fx:id="signup" layoutX="150.0" layoutY="7.0" prefHeight="36.0" prefWidth="139.0" text="Sign Up">
+         <font>
+            <Font size="36.0" />
+         </font>
+      </Label>
+      <Label fx:id="name" layoutX="52.0" layoutY="79.0" prefHeight="17.0" prefWidth="54.0" style="-fx-font-size: 20 px;" text="Name" />
+      <TextField fx:id="userNameTxt" layoutX="177.0" layoutY="82.0" prefHeight="25.0" prefWidth="175.0" promptText="Enter Your  Name " />
+      <Label layoutX="52.0" layoutY="174.0" prefHeight="30.0" prefWidth="92.0" style="-fx-font-size: 20px;" text="Password" />
+      <PasswordField fx:id="passwordTxt" layoutX="177.0" layoutY="177.0" prefHeight="25.0" prefWidth="175.0" promptText="Enter Your Password " />
+      <Label fx:id="email" layoutX="52.0" layoutY="132.0" prefHeight="17.0" prefWidth="73.0" style="-fx-font-size: 20px;" text="Email" />
+      <TextField fx:id="emailTxt" layoutX="177.0" layoutY="135.0" prefHeight="25.0" prefWidth="175.0" promptText="Enter Your Email" />
+      <Label layoutX="52.0" layoutY="228.0" prefHeight="30.0" prefWidth="92.0" style="-fx-font-size: 20px;" text="Countery" />
+      <TextField fx:id="countryTxt" layoutX="177.0" layoutY="224.0" prefHeight="25.0" prefWidth="175.0" promptText="Enter your Countery" />
+      <Label layoutX="52.0" layoutY="282.0" prefHeight="30.0" prefWidth="85.0" style="-fx-font-size: 20px;" text="Address" />
+      <TextField fx:id="addressTxt" layoutX="177.0" layoutY="278.0" prefHeight="25.0" prefWidth="175.0" promptText="Enter Your Address" />
+      <RadioButton fx:id="maleBtn" layoutX="196.0" layoutY="336.0" mnemonicParsing="false" text="Male" />
+      <Label layoutX="52.0" layoutY="335.0" prefHeight="30.0" prefWidth="73.0" style="-fx-font-size: 20px;" text="Gender" />
+      <RadioButton fx:id="femaleBtn" layoutX="272.0" layoutY="332.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="73.0" text="Female" />
+   </children>
+</AnchorPane>

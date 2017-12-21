@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane id="AnchorPane" fx:id="mainPane" prefHeight="564.0" prefWidth="747.0" stylesheets="@clientUI.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <HBox fx:id="topBar" alignment="TOP_RIGHT" prefHeight="38.0" prefWidth="703.0" BorderPane.alignment="CENTER_RIGHT">
+         <children>
+            <ImageView onMouseReleased="#minimizeStage" fx:id="minimizeIcon" fitHeight="19.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+               <HBox.margin>
+                  <Insets left="640.0" right="10.0" top="12.0" />
+               </HBox.margin>
+               <image>
+                  <Image url="@../images/minimizeWindow.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="closeIcon" fitHeight="19.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+               <HBox.margin>
+                  <Insets left="10.0" right="15.0" top="12.0" />
+               </HBox.margin>
+               <image>
+                  <Image url="@../images/closeWindow.png" />
+               </image>
+            </ImageView>
+         </children></HBox>
+   </top>
+   <center>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <top>
+            <HBox fx:id="iconsBar" prefHeight="53.0" prefWidth="492.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox fx:id="contactPersonalInfo" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="53.0" prefWidth="185.0" spacing="5.0">
+                     <children>
+                        <ImageView fx:id="profilePic" fitHeight="48.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/defaultProfilePic.png" />
+                           </image>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin></ImageView>
+                        <VBox fx:id="personalData" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="63.0">
+                           <children>
+                              <Label fx:id="personName" prefHeight="17.0" prefWidth="75.0" text="Label" textFill="#24a9e2" />
+                              <HBox prefHeight="30.0" prefWidth="178.0">
+                                 <children>
+                                    <ImageView fx:id="statusIcon" fitHeight="16.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                                    <Label fx:id="personJob" text="Label" textFill="#24a9e2" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </HBox>
+                  <HBox fx:id="rightIcons" alignment="CENTER" prefHeight="100.0" prefWidth="300.0" spacing="20.0">
+                     <children>
+                        <ImageView fx:id="createGroup" fitHeight="26.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/createGrChat.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="saveChat" fitHeight="33.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/saveChat.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="notifications" fitHeight="33.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/notifications.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="videoCall" fitHeight="33.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/videoCall.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="voiceChat" fitHeight="33.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/voiceCall.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="addContact" fitHeight="28.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/addContact.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="350.0" right="5.0" />
+                     </HBox.margin>
+                  </HBox>
+               </children>
+            </HBox>
+         </top>
+         <left>
+            <ListView fx:id="contactList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </left>
+         <center>
+            <BorderPane fx:id="contactAndMsgPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <top>
+                  <HBox fx:id="ContactInfoHBox" prefHeight="62.0" prefWidth="501.0" spacing="10.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <ImageView fx:id="contactProfIcon" fitHeight="43.0" fitWidth="51.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/myProfPic.png" />
+                           </image></ImageView>
+                        <Label fx:id="contactName" text="name" />
+                     </children>
+                     <padding>
+                        <Insets left="10.0" top="7.0" />
+                     </padding>
+                  </HBox>
+               </top>
+               <bottom>
+                  <HBox fx:id="bottomBar" prefHeight="23.0" prefWidth="503.0" spacing="10.0" style="-fx-background-color: #F4F8FB;" BorderPane.alignment="CENTER">
+                     <children>
+                        <TextField fx:id="typeMsgField" prefHeight="25.0" prefWidth="231.0" promptText="Type Your Message..." />
+                        <ImageView fx:id="attachFileIcon" fitHeight="23.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets left="2.0" right="2.0" />
+                           </HBox.margin>
+                           <image>
+                              <Image url="@../images/attachFile.png" />
+                           </image></ImageView>
+                        <ColorPicker fx:id="colorPicker" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="84.0" promptText="DarkGrey" />
+                        <ComboBox fx:id="fontTypePicker" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="83.0" promptText="Thoma" />
+                        <ComboBox fx:id="fontSizePicker" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="58.0" promptText="16">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </ComboBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+               </bottom>
+               <center>
+                  <ScrollPane fx:id="messageScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
+                     <content>
+                        <VBox fx:id="msgsContainer" prefHeight="349.0" prefWidth="544.0" />
+                     </content>
+                  </ScrollPane>
+               </center>
+            </BorderPane>
+         </center>
+      </BorderPane>
+   </center>
+</BorderPane>

@@ -1,0 +1,20 @@
+
+#iconsBar, #msgsContainer, #ContactInfoHBox{
+    -fx-background-color: #F4F8FB;   
+}
+
+#topBar {
+    -fx-background-color: #706F74;     
+}
+
+#contactAndMsgPane {
+    -fx-border-color: #BEBEBE;
+}
+
+#personName, #personJob {
+    -fx-text-fill: #383838;
+}
+
+#contactName {
+    -fx-text-fill: #383838;
+}
