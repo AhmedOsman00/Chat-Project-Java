@@ -5,9 +5,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 public class ServerFormController implements Initializable, Service{
 
@@ -25,6 +29,14 @@ public class ServerFormController implements Initializable, Service{
     private RadioButton maleBtn;
     @FXML
     private RadioButton femaleBtn;
+    @FXML
+    private Button signUpBtn;
+    @FXML
+    private Button cancelBtn;
+    @FXML
+    private BorderPane serverFormMainPane;
+    @FXML
+    private HBox topBar;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -32,7 +44,9 @@ public class ServerFormController implements Initializable, Service{
         genderGroup.getToggles().add(maleBtn);
         genderGroup.getToggles().add(femaleBtn);
     }
-
+public void stop(){
+    
+}
     @Override
     public String getName() {
         return "ServerFormController";
@@ -40,7 +54,7 @@ public class ServerFormController implements Initializable, Service{
 
     @Override
     public void excute() {
-        
+       
     }
     
 }

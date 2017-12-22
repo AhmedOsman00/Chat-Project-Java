@@ -10,34 +10,62 @@ import rmiinterfaces.*;
 
 public class ServerImpl extends UnicastRemoteObject implements ServerInt, Service {
 
-    private static ArrayList <ClientInt> clients = new ArrayList<>();
-    DataBaseConnection DbConn = DataBaseConnection.getInstance();
+    private static final ArrayList <ClientInt> clients = new ArrayList<>();
+    private ArrayList <ClientInt> contactList;
+    DataBaseConnection dbConn ;
+    private static ServerImpl instance;
 
-    public ServerImpl() throws RemoteException {
+    private ServerImpl() throws RemoteException {
 
     }
 
-    @Override
-    public void tellOthers(String msg, String name) {
-        for (ClientInt clientRef : clients) {
+    public static ServerImpl getInstance() {
+        if (instance == null) {
             try {
-                clientRef.receive(msg, name);
-                System.out.println(name);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+                instance = new ServerImpl();
+            } catch (RemoteException ex) {
+                Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        return instance;
+    }
+
+    @Override
+    public void tellOthers(Message msg) {
+        for (ClientInt clientRef : clients) {
+            for (ClientInt clientReciverRef : msg.getReceiverName()) {
+                try {
+                    if (clientReciverRef.getClient_user_name().equals(clientRef.getClient_user_name())) {
+                        try {
+                            clientRef.receive(msg);
+                            System.out.println(msg);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (RemoteException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
         }
     }
 
     @Override
-    public void register(ClientInt clientRef) {
+    public ArrayList <ClientInt> register(ClientInt client,String password) {
         try {
-            if(DbConn.clientValidate()){
-                clients.add(clientRef);
+            dbConn = (DataBaseConnection) ServiceLocator.getService("dbConn");
+            if (dbConn.clientValidate(client.getClient_user_name(), password)) {
+                clients.add(client);                
+                contactList = dbConn.getContactList();
+                contactList.add(dbConn.fillData(client));
             }
         } catch (SQLException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return contactList;
     }
 
     @Override
@@ -47,12 +75,27 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
 
     @Override
     public String getName() {
-        return "ServerImpl";
+        return "serverImpl";
     }
 
     @Override
     public void excute() {
-        
+
     }
-    
+
+    @Override
+    public Boolean searchUserName(ClientInt client) throws RemoteException {
+        try {
+            dbConn = (DataBaseConnection) ServiceLocator.getService("dbConn");
+            if (dbConn.clientValidate(client.getClient_user_name())) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
 }

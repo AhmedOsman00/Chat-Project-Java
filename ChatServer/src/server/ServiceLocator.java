@@ -1,7 +1,7 @@
 package server;
 
 
-class ServiceLocator {
+public class ServiceLocator {
 
     private static Cach cach;
 

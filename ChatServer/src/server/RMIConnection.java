@@ -15,7 +15,7 @@ public class RMIConnection implements Service {
 
     private RMIConnection() {
         try {
-            ServerInt serverObj = new ServerImpl();
+            ServerInt serverObj = (ServerInt) ServiceLocator.getService("serverImpl");
             Registry reg = LocateRegistry.createRegistry(5005);
             reg.rebind("chatService", serverObj);
         } catch (RemoteException e) {
@@ -25,7 +25,7 @@ public class RMIConnection implements Service {
 
     @Override
     public String getName() {
-        return "RmiService";
+        return "rmiService";
     }
 
     @Override

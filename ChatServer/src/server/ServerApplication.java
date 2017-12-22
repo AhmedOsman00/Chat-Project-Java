@@ -15,7 +15,8 @@ public class ServerApplication extends Application implements Service {
         FXMLLoader loader = new FXMLLoader();
         ServerController serverController = (ServerController) ServiceLocator.getService("serverController");
         loader.setController(serverController);
-        Parent root = loader.load(getClass().getResource("Server.fxml"));
+        ServiceLocator.getService("rmiService");
+        Parent root = loader.load(getClass().getResource("Server.fxml").openStream());
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.resizableProperty().set(false);

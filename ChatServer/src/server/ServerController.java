@@ -2,21 +2,29 @@ package server;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 
-class ServerController implements Initializable, Service {
+public class ServerController implements Initializable, Service {
 
     @FXML
-    Button serverNotification;
+    private Button serverNotification;
     @FXML
-    Button serverStart;
+    private Button serverStart;
     @FXML
-    Button serverStop;
+    private Button serverStop;
     @FXML
-    Button serverStatictics;
+    private Button serverStatictics;
+    @FXML
+    private Label offUsersVal;
+    @FXML
+    private Label onUsersVal;
+    private final IntegerProperty offProperty = new SimpleIntegerProperty();
+    private final IntegerProperty onProperty = new SimpleIntegerProperty();
     private static ServerController instance = new ServerController();
 
     private ServerController() {
@@ -31,10 +39,22 @@ class ServerController implements Initializable, Service {
         serverStart.setShape(new Circle(40));
         serverStart.setMaxSize(80, 80);
         serverStop.setShape(new Circle(40));
-        serverStop.setMaxSize(80, 80);
+        serverStop.setMaxSize(80, 80);        
     }
 
     public void stop() {
+
+    }
+
+    public void strat() {
+
+    }
+
+    public void sendNotification() {
+
+    }
+
+    public void showStatistics() {
 
     }
 

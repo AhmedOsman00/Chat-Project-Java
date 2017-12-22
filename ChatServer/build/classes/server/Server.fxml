@@ -45,10 +45,13 @@
                 </VBox>
                 <VBox alignment="CENTER" prefHeight="172.0" prefWidth="242.0" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                     <children>
-                        <Label text="Offline Users" textFill="#e82727" />
-                        <Label text="2" />
+                        <Label text="Offline Users" textFill="#e82727">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></Label>
+                        <Label fx:id="offUsersVal" text="2" />
                         <Label text="Online Users" textFill="#48e148" />
-                        <Label alignment="CENTER" text="2" />
+                        <Label fx:id="onUsersVal" alignment="CENTER" text="2" />
                         <Button fx:id="serverStatictics" mnemonicParsing="false" prefHeight="25.0" prefWidth="145.0" text="Statictics" />
                     </children>
                     <GridPane.margin>
@@ -59,7 +62,7 @@
                     </padding>
                 </VBox>
                 <Button fx:id="serverStart" mnemonicParsing="false" text="Start" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                <Button fx:id="serverStop" mnemonicParsing="false" text="Stop" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                <Button fx:id="serverStop" mnemonicParsing="false" onAction="#stop" text="Stop" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
             </children>
         </GridPane>
     </center>

@@ -1,9 +1,11 @@
 package server;
 
+import java.rmi.*;
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
+import java.util.logging.*;
 import oracle.jdbc.*;
+import rmiinterfaces.*;
 
 public class DataBaseConnection implements Service {
 
@@ -11,12 +13,13 @@ public class DataBaseConnection implements Service {
     private PreparedStatement adminInfoPrepStmt;
     private Statement stmt;
     private ResultSet resultSet;
-    private static DataBaseConnection instance;
+    private static DataBaseConnection instance = new DataBaseConnection();
     private ServerImpl serverImpl;
+    private ArrayList<ClientInt> contactlist;
+    private ArrayList<ClientInt> requestsList;
 
     private DataBaseConnection() {
-        instance = new DataBaseConnection();
-        serverImpl = (ServerImpl) ServiceLocator.getService("ServerImpl");
+        serverImpl = (ServerImpl) ServiceLocator.getService("serverImpl");
         try {
             DriverManager.registerDriver(new OracleDriver());
             connection = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "chat", "year");
@@ -25,9 +28,15 @@ public class DataBaseConnection implements Service {
         }
     }
 
+    public static DataBaseConnection getInstance() {
+        return instance;
+    }
+
     public void insertAdminInfo() {
         try {
-            adminInfoPrepStmt = connection.prepareStatement("INSERT INTO admin_data (admin_id,admin_user_name , admin_password , admin_gender , admin_address , admin_email ) VALUES (?,?,?,?,?,?)", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            adminInfoPrepStmt = connection.prepareStatement("INSERT INTO admin_data (admin_id, admin_user_name,"
+                    + " admin_password, admin_gender ,admin_address, admin_email ) VALUES (?,?,?,?,?,?)",
+                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             adminInfoPrepStmt.setInt(1, 1);
             adminInfoPrepStmt.setString(2, "");
             adminInfoPrepStmt.setString(3, "");
@@ -40,19 +49,31 @@ public class DataBaseConnection implements Service {
         }
     }
 
-    public Boolean clientValidate() throws SQLException {
+    public Boolean clientValidate(String client_user_name) throws SQLException {
         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         resultSet = stmt.executeQuery("select * from client_data where client_email = #");
         if (resultSet.first()) {
-            serverImpl.register(null);
             return true;
+        }
+        return false;
+    }
+
+    public Boolean clientValidate(String client_user_name, String password) throws SQLException {
+        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        resultSet = stmt.executeQuery("select * from client_data where client_email = #");
+        if (resultSet.first()) {
+            if (resultSet.getString("client_password").equals(password)) {
+                return true;
+            }
         }
         return false;
     }
 
     public void insertClientInfo() {
         try {
-            adminInfoPrepStmt = connection.prepareStatement("INSERT INTO client_data (client_id,client_pic,client_user_name,client_password,client_gender,client_status,client_address,client_email) VALUES (?,?,?,?,?,?,?,?)", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            adminInfoPrepStmt = connection.prepareStatement("INSERT INTO client_data (client_id,client_pic,"
+                    + "client_user_name,client_password,client_gender,client_status,client_address,client_email) "
+                    + "VALUES (?,?,?,?,?,?,?,?)", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             adminInfoPrepStmt.setInt(1, 1);
             adminInfoPrepStmt.setString(2, "utl_raw.cast_to_raw('D:\\automobile.png')");
             adminInfoPrepStmt.setString(3, "");
@@ -76,6 +97,18 @@ public class DataBaseConnection implements Service {
         return null;
     }
 
+    public ClientInt fillData(ClientInt client) throws SQLException, RemoteException {
+        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        resultSet = stmt.executeQuery("select client_status from client_data where client_id = #");
+        if (resultSet.next()) {
+            client.setClient_image(resultSet.getString("client_pic"));
+            client.setClient_status(resultSet.getString("client_status"));
+            client.setName(resultSet.getString("client_name"));
+            return client;
+        }
+        return null;
+    }
+
     public void setStatus(String status) {
         try {
             adminInfoPrepStmt = connection.prepareStatement("INSERT INTO client_data (client_status) VALUES (?)",
@@ -87,13 +120,53 @@ public class DataBaseConnection implements Service {
         }
     }
 
-    public static DataBaseConnection getInstance() {
-        return instance;
+    public ArrayList<ClientInt> getContactList() {
+        try {
+            contactlist = new ArrayList<>();
+            stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            resultSet = stmt.executeQuery("select * from contact_list cl join client_data cd "
+                    + "on cl.client_user_name = cd.client_user_name where cl.client_user_name= #");
+            if (resultSet.next()) {
+                Client client = new Client();
+                client.setClient_user_name(resultSet.getString("client_user_name"));
+                client.setName("client_name");
+                client.setClient_image("client_pic");
+                client.setClient_status("client_status");
+                contactlist.add(client);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return contactlist;
+    }
+
+    public ArrayList<ClientInt> getAllRequests() {
+        try {
+            requestsList = new ArrayList<>();
+            stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            resultSet = stmt.executeQuery("select * from requests rq join client_data cd "
+                    + "on rq.client_user_name = cd.client_user_name where rq.client_user_name= #");
+            if (resultSet.next()) {
+                Client client = new Client();
+                client.setClient_user_name(resultSet.getString("client_user_name"));
+                client.setName("client_name");
+                client.setClient_image("client_pic");
+                client.setClient_status("client_status");
+                contactlist.add(client);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return requestsList;
     }
 
     @Override
     public String getName() {
-        return "DBConn";
+        return "dbConn";
     }
 
     @Override
