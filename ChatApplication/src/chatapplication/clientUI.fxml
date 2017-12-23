@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
@@ -12,6 +13,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
 <BorderPane id="AnchorPane" fx:id="mainPane" prefHeight="564.0" prefWidth="747.0" stylesheets="@clientUI.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <top>
@@ -40,7 +42,7 @@
          <top>
             <HBox fx:id="iconsBar" prefHeight="53.0" prefWidth="492.0" BorderPane.alignment="CENTER">
                <children>
-                  <HBox fx:id="contactPersonalInfo" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="53.0" prefWidth="185.0" spacing="5.0">
+                  <HBox fx:id="contactPersonalInfo" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="53.0" prefWidth="99.0" spacing="5.0">
                      <children>
                         <ImageView fx:id="profilePic" fitHeight="48.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -51,13 +53,8 @@
                            </HBox.margin></ImageView>
                         <VBox fx:id="personalData" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="63.0">
                            <children>
-                              <Label fx:id="personName" prefHeight="17.0" prefWidth="75.0" text="Label" textFill="#24a9e2" />
-                              <HBox prefHeight="30.0" prefWidth="178.0">
-                                 <children>
-                                    <ImageView fx:id="statusIcon" fitHeight="16.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
-                                    <Label fx:id="personJob" text="Label" textFill="#24a9e2" />
-                                 </children>
-                              </HBox>
+                              <Label fx:id="personName" prefHeight="17.0" prefWidth="49.0" text="Label" textFill="#24a9e2" />
+                              <Circle fill="DODGERBLUE" radius="7.0" stroke="BLACK" strokeType="INSIDE" />
                            </children>
                         </VBox>
                      </children>
@@ -65,8 +62,9 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </HBox>
-                  <HBox fx:id="rightIcons" alignment="CENTER" prefHeight="100.0" prefWidth="300.0" spacing="20.0">
+                  <HBox fx:id="rightIcons" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="53.0" prefWidth="480.0" spacing="5.0">
                      <children>
+                        <ComboBox fx:id="statusBox" prefHeight="25.0" prefWidth="64.0" />
                         <ImageView fx:id="createGroup" fitHeight="26.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/createGrChat.png" />
@@ -77,7 +75,8 @@
                               <Image url="@../images/saveChat.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="notifications" fitHeight="33.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
+                        <ComboBox fx:id="notificationBox" prefHeight="25.0" prefWidth="56.0" />
+                        <ImageView fx:id="notificationsIcon" fitHeight="33.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/notifications.png" />
                            </image>
@@ -92,21 +91,21 @@
                               <Image url="@../images/voiceCall.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="addContact" fitHeight="28.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/addContact.png" />
-                           </image>
-                        </ImageView>
+                        <TextField fx:id="addContactField" onKeyPressed="#searchToAddUsers" prefHeight="25.0" prefWidth="136.0" promptText="Search Users...">
+                           <contextMenu>
+                              <ContextMenu fx:id="notifiPopMenu" />
+                           </contextMenu>
+                        </TextField>
                      </children>
                      <HBox.margin>
-                        <Insets left="350.0" right="5.0" />
+                        <Insets left="200.0" right="5.0" />
                      </HBox.margin>
                   </HBox>
                </children>
             </HBox>
          </top>
          <left>
-            <ListView fx:id="contactList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+            <ListView fx:id="contactListView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </left>
          <center>
             <BorderPane fx:id="contactAndMsgPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
@@ -117,7 +116,8 @@
                            <image>
                               <Image url="@../images/myProfPic.png" />
                            </image></ImageView>
-                        <Label fx:id="contactName" text="name" />
+                        <Label fx:id="contactName" maxWidth="-Infinity" prefHeight="17.0" prefWidth="17.0" text="name" />
+                        <VBox fx:id="msgsContainer" prefHeight="349.0" prefWidth="544.0" />
                      </children>
                      <padding>
                         <Insets left="10.0" top="7.0" />
@@ -149,11 +149,7 @@
                   </HBox>
                </bottom>
                <center>
-                  <ScrollPane fx:id="messageScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
-                     <content>
-                        <VBox fx:id="msgsContainer" prefHeight="349.0" prefWidth="544.0" />
-                     </content>
-                  </ScrollPane>
+                  <ScrollPane fx:id="messageScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
          </center>

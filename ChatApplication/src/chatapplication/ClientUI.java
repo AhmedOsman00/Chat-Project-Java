@@ -15,7 +15,7 @@ public class ClientUI extends Application {
         loader.setLocation(getClass().getResource("clientUI.fxml"));
         Parent root = loader.load(getClass().getResource("clientUI.fxml").openStream());
         Scene scene = new Scene(root);
-       // primaryStage.initStyle(StageStyle.UNDECORATED);
+        // primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();

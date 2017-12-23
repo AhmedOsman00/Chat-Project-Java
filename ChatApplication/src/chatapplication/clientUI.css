@@ -18,3 +18,6 @@
 #contactName {
     -fx-text-fill: #383838;
 }
+#contactItem {
+    -fx-background-color: #9e6ff;
+}

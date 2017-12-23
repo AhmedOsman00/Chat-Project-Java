@@ -1,25 +1,25 @@
 package rmiinterfaces;
 
 import java.rmi.*;
+import java.util.ArrayList;
 
 public interface ClientInt extends Remote {
 
-    void receive(Message msg) throws RemoteException;
+    void receiveNotification(String notification) throws RemoteException;
 
-    public String getClient_image() throws RemoteException;
+    void receiveMsg(Message msg) throws RemoteException;
 
-    public void setClient_image(String client_image) throws RemoteException;
+    public ArrayList<Client> getContactList() throws RemoteException;
 
-    public String getClient_user_name() throws RemoteException;
+    public void setContactList(ArrayList<Client> contactList) throws RemoteException;
 
-    public void setClient_user_name(String client_user_name) throws RemoteException;
+    public Client getCurrentClient() throws RemoteException;
 
-    public String getClient_status() throws RemoteException;
+    public void setCurrentClient(Client currentClient) throws RemoteException;
 
-    public void setClient_status(String client_status) throws RemoteException;
+    public ArrayList<Client> getRequestsList() throws RemoteException;
 
-    public String getName() throws RemoteException;
-
-    public void setName(String name) throws RemoteException;
-
+    public void setRequestsList(ArrayList<Client> requestsList) throws RemoteException;
+    
+    public void addToContactList(Client client) throws RemoteException;
 }

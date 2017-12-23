@@ -44,12 +44,8 @@ public class Message implements Serializable{
         return msg_context;
     }
 
-
-    public void setReceiverName(Client client) {
-        if(receiverName==null){
-            receiverName=new ArrayList<>();
-        }
-        this.receiverName.add(client);
+    public void setReceiverName(ArrayList<Client> receiverName) {
+        this.receiverName = receiverName;
     }
 
     public void setSenderName(Client senderName) {

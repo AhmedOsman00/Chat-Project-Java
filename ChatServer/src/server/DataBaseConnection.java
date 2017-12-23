@@ -10,13 +10,13 @@ import rmiinterfaces.*;
 public class DataBaseConnection implements Service {
 
     private Connection connection;
-    private PreparedStatement adminInfoPrepStmt;
+    private PreparedStatement preparedStmt;
     private Statement stmt;
     private ResultSet resultSet;
     private static DataBaseConnection instance = new DataBaseConnection();
     private ServerImpl serverImpl;
-    private ArrayList<ClientInt> contactlist;
-    private ArrayList<ClientInt> requestsList;
+    private ArrayList<Client> contactlist;
+    private ArrayList<Client> requestsList;
 
     private DataBaseConnection() {
         serverImpl = (ServerImpl) ServiceLocator.getService("serverImpl");
@@ -34,33 +34,44 @@ public class DataBaseConnection implements Service {
 
     public void insertAdminInfo() {
         try {
-            adminInfoPrepStmt = connection.prepareStatement("INSERT INTO admin_data (admin_id, admin_user_name,"
+            preparedStmt = connection.prepareStatement("INSERT INTO admin_data (admin_id, admin_user_name,"
                     + " admin_password, admin_gender ,admin_address, admin_email ) VALUES (?,?,?,?,?,?)",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            adminInfoPrepStmt.setInt(1, 1);
-            adminInfoPrepStmt.setString(2, "");
-            adminInfoPrepStmt.setString(3, "");
-            adminInfoPrepStmt.setString(4, "");
-            adminInfoPrepStmt.setString(5, "");
-            adminInfoPrepStmt.setString(6, "");
-            adminInfoPrepStmt.executeUpdate();
+            preparedStmt.setInt(1, 1);
+            preparedStmt.setString(2, "");
+            preparedStmt.setString(3, "");
+            preparedStmt.setString(4, "");
+            preparedStmt.setString(5, "");
+            preparedStmt.setString(6, "");
+            preparedStmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public Boolean clientValidate(String client_user_name) throws SQLException {
-        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        resultSet = stmt.executeQuery("select * from client_data where client_email = #");
-        if (resultSet.first()) {
-            return true;
+    public ArrayList<Client> searchUserName(String client_user_name) {
+        ArrayList<Client> matchedUsers = new ArrayList<>();
+        try {
+            stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            resultSet = stmt.executeQuery("select client_user_name  from client_data where client_user_name like %#%");
+            while (resultSet.next()) {
+                Client client = new Client();
+                client.setClient_image(resultSet.getString("client_pic"));
+                client.setClient_name(resultSet.getString("client_name"));
+                client.setClient_user_name(resultSet.getString("client_user_name"));
+                matchedUsers.add(client);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return false;
+        return matchedUsers;
     }
 
     public Boolean clientValidate(String client_user_name, String password) throws SQLException {
         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        resultSet = stmt.executeQuery("select * from client_data where client_email = #");
+        resultSet = stmt.executeQuery("select * from client_data where client_user_name = #");
         if (resultSet.first()) {
             if (resultSet.getString("client_password").equals(password)) {
                 return true;
@@ -71,18 +82,18 @@ public class DataBaseConnection implements Service {
 
     public void insertClientInfo() {
         try {
-            adminInfoPrepStmt = connection.prepareStatement("INSERT INTO client_data (client_id,client_pic,"
+            preparedStmt = connection.prepareStatement("INSERT INTO client_data (client_id,client_pic,"
                     + "client_user_name,client_password,client_gender,client_status,client_address,client_email) "
                     + "VALUES (?,?,?,?,?,?,?,?)", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            adminInfoPrepStmt.setInt(1, 1);
-            adminInfoPrepStmt.setString(2, "utl_raw.cast_to_raw('D:\\automobile.png')");
-            adminInfoPrepStmt.setString(3, "");
-            adminInfoPrepStmt.setString(4, "");
-            adminInfoPrepStmt.setString(5, "");
-            adminInfoPrepStmt.setString(6, "");
-            adminInfoPrepStmt.setString(7, "");
-            adminInfoPrepStmt.setString(8, "");
-            adminInfoPrepStmt.executeUpdate();
+            preparedStmt.setInt(1, 1);
+            preparedStmt.setString(2, "utl_raw.cast_to_raw('D:\\automobile.png')");
+            preparedStmt.setString(3, "");
+            preparedStmt.setString(4, "");
+            preparedStmt.setString(5, "");
+            preparedStmt.setString(6, "");
+            preparedStmt.setString(7, "");
+            preparedStmt.setString(8, "");
+            preparedStmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -97,13 +108,14 @@ public class DataBaseConnection implements Service {
         return null;
     }
 
-    public ClientInt fillData(ClientInt client) throws SQLException, RemoteException {
+    public Client fillData(String username) throws SQLException, RemoteException {
+        Client client = new Client();
         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        resultSet = stmt.executeQuery("select client_status from client_data where client_id = #");
+        resultSet = stmt.executeQuery("select * from client_data where client_user_name = #");
         if (resultSet.next()) {
             client.setClient_image(resultSet.getString("client_pic"));
             client.setClient_status(resultSet.getString("client_status"));
-            client.setName(resultSet.getString("client_name"));
+            client.setClient_name(resultSet.getString("client_name"));
             return client;
         }
         return null;
@@ -111,16 +123,16 @@ public class DataBaseConnection implements Service {
 
     public void setStatus(String status) {
         try {
-            adminInfoPrepStmt = connection.prepareStatement("INSERT INTO client_data (client_status) VALUES (?)",
+            preparedStmt = connection.prepareStatement("INSERT INTO client_data (client_status) VALUES (?)",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            adminInfoPrepStmt.setString(1, "");
-            adminInfoPrepStmt.executeUpdate();
+            preparedStmt.setString(1, "");
+            preparedStmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public ArrayList<ClientInt> getContactList() {
+    public ArrayList<Client> getContactList() {
         try {
             contactlist = new ArrayList<>();
             stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -129,7 +141,7 @@ public class DataBaseConnection implements Service {
             if (resultSet.next()) {
                 Client client = new Client();
                 client.setClient_user_name(resultSet.getString("client_user_name"));
-                client.setName("client_name");
+                client.setClient_name("client_name");
                 client.setClient_image("client_pic");
                 client.setClient_status("client_status");
                 contactlist.add(client);
@@ -142,7 +154,7 @@ public class DataBaseConnection implements Service {
         return contactlist;
     }
 
-    public ArrayList<ClientInt> getAllRequests() {
+    public ArrayList<Client> getAllRequests() {
         try {
             requestsList = new ArrayList<>();
             stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -151,10 +163,10 @@ public class DataBaseConnection implements Service {
             if (resultSet.next()) {
                 Client client = new Client();
                 client.setClient_user_name(resultSet.getString("client_user_name"));
-                client.setName("client_name");
+                client.setClient_name("client_name");
                 client.setClient_image("client_pic");
                 client.setClient_status("client_status");
-                contactlist.add(client);
+                requestsList.add(client);
             }
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -162,6 +174,23 @@ public class DataBaseConnection implements Service {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
         return requestsList;
+    }
+
+    public void acceptContact(Client client, Client currClient) throws RemoteException {
+        try {
+            preparedStmt = connection.prepareStatement("INSERT INTO contact_list (contact_user_name, client_user_name)"
+                    + "VALUES (?,?)", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            preparedStmt.setString(1, client.getClient_user_name());
+            preparedStmt.setString(2, currClient.getClient_user_name());
+            preparedStmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void removeRequest(String reqSender, String reqReceiver) throws SQLException, RemoteException {
+        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        stmt.executeUpdate("delete from requests where sender_user_name = # and receiver_user_name = #");
     }
 
     @Override

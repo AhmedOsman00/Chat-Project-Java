@@ -6,9 +6,8 @@ import java.util.ResourceBundle;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import rmiinterfaces.*;
 
-public class ClientLogFormController implements Initializable, Service {
+public class ClientLogFormController implements Initializable, Service {//remove from service locator
 
     @FXML
     private Hyperlink signupLink;
@@ -19,11 +18,9 @@ public class ClientLogFormController implements Initializable, Service {
     @FXML
     private TextField passwordTxt;
 
-    private RMIConnection iConnection = (RMIConnection) ServiceLocator.getService("rmiService");
+    private final CallServerRMI iConnection = (CallServerRMI) ServiceLocator.getService("rmiService");
 
-    private static ClientLogFormController instance = new ClientLogFormController();
-
-    private Client client = (Client) ServiceLocator.getService("clientService");
+    private static final ClientLogFormController instance = new ClientLogFormController();
 
     private ClientLogFormController() {
 
@@ -54,9 +51,8 @@ public class ClientLogFormController implements Initializable, Service {
         //stage
     }
 
-    public void signIn() throws IOException {
-        client.setClient_user_name(userNameTxt.getText());
-        if (iConnection.regToServer(client, passwordTxt.getText())) {            
+    public void signIn() throws IOException {        
+        if (iConnection.regToServer(userNameTxt.getText(), passwordTxt.getText())) {            
             FXMLLoader loader = new FXMLLoader();
             ChatController chatController = (ChatController) ServiceLocator.
                     getService("chatController");

@@ -4,21 +4,20 @@ import java.rmi.RemoteException;
 import java.rmi.server.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import rmiinterfaces.*;
 
 public class ServerImpl extends UnicastRemoteObject implements ServerInt, Service {
-
-    private static final ArrayList <ClientInt> clients = new ArrayList<>();
-    private ArrayList <ClientInt> contactList;
-    DataBaseConnection dbConn ;
+    
+    private static final ArrayList<ClientInt> clients = new ArrayList<>();
+    private DataBaseConnection dbConn;
     private static ServerImpl instance;
-
+    private ClientInt clientInt;
+    
     private ServerImpl() throws RemoteException {
-
+        
     }
-
+    
     public static ServerImpl getInstance() {
         if (instance == null) {
             try {
@@ -30,14 +29,19 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
         return instance;
     }
 
+//    @Override
+//    public void signUp(ClientRegData regData){
+//        //call insert client info
+//        //call register
+//    }
     @Override
-    public void tellOthers(Message msg) {
+    public void tellOthers(Message msg) {//if the other user is offline dont send message to both
         for (ClientInt clientRef : clients) {
-            for (ClientInt clientReciverRef : msg.getReceiverName()) {
+            for (Client clientReciverRef : msg.getReceiverName()) {
                 try {
-                    if (clientReciverRef.getClient_user_name().equals(clientRef.getClient_user_name())) {
+                    if (clientReciverRef.getClient_user_name().equals(clientRef.getCurrentClient().getClient_user_name())) {
                         try {
-                            clientRef.receive(msg);
+                            clientRef.receiveMsg(msg);
                             System.out.println(msg);
                         } catch (RemoteException e) {
                             e.printStackTrace();
@@ -47,55 +51,70 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
                     ex.printStackTrace();
                 }
             }
-
+            
         }
     }
-
+    
     @Override
-    public ArrayList <ClientInt> register(ClientInt client,String password) {
+    public void register(String username, String password, ClientInt clientRef) {
         try {
             dbConn = (DataBaseConnection) ServiceLocator.getService("dbConn");
-            if (dbConn.clientValidate(client.getClient_user_name(), password)) {
-                clients.add(client);                
-                contactList = dbConn.getContactList();
-                contactList.add(dbConn.fillData(client));
+            if (dbConn.clientValidate(username, password)) {
+                clientRef.setCurrentClient(dbConn.fillData(username));
+                clientRef.setContactList(dbConn.getContactList());
+                clientRef.setRequestsList(dbConn.getAllRequests());
+                clients.add(clientRef);
             }
         } catch (SQLException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (RemoteException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return contactList;
     }
-
+    
     @Override
     public void unregister(ClientInt clientRef) {
         clients.remove(clientRef);
     }
-
+    
     @Override
     public String getName() {
         return "serverImpl";
     }
-
+    
     @Override
     public void excute() {
-
+        
+    }
+    
+    @Override
+    public ArrayList<Client> searchUserName(String client_user_name) throws RemoteException {
+        dbConn = (DataBaseConnection) ServiceLocator.getService("dbConn");
+        return dbConn.searchUserName(client_user_name);
+    }
+    
+    @Override
+    public void sendNotification(String notification) throws RemoteException {
+        
+    }
+    
+    @Override
+    public void addUserName(Client ref, Client currRef) throws RemoteException {
+        dbConn.acceptContact(ref, currRef);
+        for (ClientInt client : clients) {
+            if (client.getCurrentClient().getClient_user_name().equals(ref.getClient_user_name())) {
+                client.addToContactList(currRef);
+            }
+        }
     }
 
     @Override
-    public Boolean searchUserName(ClientInt client) throws RemoteException {
+    public void removeRequestFromDB(String reqSender, String reqReceiver) throws RemoteException {
         try {
-            dbConn = (DataBaseConnection) ServiceLocator.getService("dbConn");
-            if (dbConn.clientValidate(client.getClient_user_name())) {
-                return true;
-            }
+            dbConn.removeRequest(reqSender, reqReceiver);
         } catch (SQLException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RemoteException ex) {
-            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return false;
     }
-
+    
 }

@@ -1,10 +1,5 @@
 package chatapplication;
 
-import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import rmiinterfaces.*;
-
 
 public class InitialContext {
 
@@ -13,19 +8,15 @@ public class InitialContext {
         if (jndiName.equalsIgnoreCase("chatController")) {
             return ChatController.getInstance();
         }else if(jndiName.equalsIgnoreCase("rmiService")){
-            return RMIConnection.getInstance();
+            return CallServerRMI.getInstance();
         }else if(jndiName.equalsIgnoreCase("clientRegController")){
-            return RMIConnection.getInstance();
+            return CallServerRMI.getInstance();
         }else if(jndiName.equalsIgnoreCase("clientLogController")){
             return ClientLogFormController.getInstance();
-        }else if(jndiName.equalsIgnoreCase("clientService")){
-            try {
-                return new Client();
-            } catch (RemoteException ex) {
-                Logger.getLogger(InitialContext.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        }else if(jndiName.equalsIgnoreCase(" clientServiceclientService")){
+            return ClientLogFormController.getInstance();
         }
-        
+       
         return null;
     }
 }
