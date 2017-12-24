@@ -151,11 +151,20 @@ public class ChatController implements Initializable, Service {
                         HBox notifBox = new HBox();
                         ImageView pic = new ImageView();
                         Label name = new Label(); 
+                        Label reqSent = new Label("Request Sent");
                         name.setText(matchedUser.getClient_name());
                         pic.setImage(new Image(matchedUser.getClient_image()));
                         if (!matchedUser.getClient_user_name().equals(contact.getClient_user_name())) {
                             Button add = new Button("Add");
                             add.setOnAction((event)-> {
+                                addAndName.getChildren().remove(add);
+                                addAndName.getChildren().add(reqSent);
+                                try {
+                                    iConnection.tellServerToAdd(contact, personalData.getCurrentClient());
+                                } catch (RemoteException ex) {
+                                    Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                
                                 
                             });
                             addAndName.getChildren().addAll(name, add);

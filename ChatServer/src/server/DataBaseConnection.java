@@ -63,8 +63,6 @@ public class DataBaseConnection implements Service {
             }
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RemoteException ex) {
-            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
         return matchedUsers;
     }
@@ -80,19 +78,18 @@ public class DataBaseConnection implements Service {
         return false;
     }
 
-    public void insertClientInfo() {
+    public void insertClientInfo(ClientRegData clientRegData) {
         try {
-            preparedStmt = connection.prepareStatement("INSERT INTO client_data (client_id,client_pic,"
-                    + "client_user_name,client_password,client_gender,client_status,client_address,client_email) "
-                    + "VALUES (?,?,?,?,?,?,?,?)", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            preparedStmt.setInt(1, 1);
-            preparedStmt.setString(2, "utl_raw.cast_to_raw('D:\\automobile.png')");
-            preparedStmt.setString(3, "");
-            preparedStmt.setString(4, "");
-            preparedStmt.setString(5, "");
-            preparedStmt.setString(6, "");
-            preparedStmt.setString(7, "");
-            preparedStmt.setString(8, "");
+            preparedStmt = connection.prepareStatement("INSERT INTO client_data (client_pic,"
+                    + "client_user_name,client_password,client_gender,client_status,client_address,client_name) "
+                    + "VALUES (?,?,?,?,?,?,?)", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            preparedStmt.setString(1, "utl_raw.cast_to_raw('D:\\automobile.png')");
+            preparedStmt.setString(2, clientRegData.getClient_user_name());
+            preparedStmt.setString(3, clientRegData.getPassword());
+            preparedStmt.setString(4, clientRegData.getGender());
+            preparedStmt.setString(5, "online");
+            preparedStmt.setString(6, clientRegData.getAddress());
+            preparedStmt.setString(7, clientRegData.getClient_name());
             preparedStmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -148,8 +145,6 @@ public class DataBaseConnection implements Service {
             }
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RemoteException ex) {
-            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
         return contactlist;
     }
@@ -170,8 +165,6 @@ public class DataBaseConnection implements Service {
             }
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RemoteException ex) {
-            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
         return requestsList;
     }
@@ -191,6 +184,27 @@ public class DataBaseConnection implements Service {
     public void removeRequest(String reqSender, String reqReceiver) throws SQLException, RemoteException {
         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         stmt.executeUpdate("delete from requests where sender_user_name = # and receiver_user_name = #");
+    }
+
+    public void addToRequestsTable(Client client, Client currClient) {
+        try {
+            preparedStmt = connection.prepareStatement("INSERT INTO requests (receiver_user_name, sender_user_name)"
+                    + "VALUES (?,?)", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            preparedStmt.setString(1, currClient.getClient_user_name());
+            preparedStmt.setString(2, client.getClient_user_name());
+            preparedStmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    Boolean uniqueUserName(String username) throws SQLException {
+        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        resultSet = stmt.executeQuery("select * from client_data where client_user_name = #");
+        if (resultSet.next()) {
+            return true;
+        }
+        return false;
     }
 
     @Override

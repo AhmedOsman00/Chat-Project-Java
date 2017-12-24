@@ -68,6 +68,25 @@ public class CallServerRMI implements Service {
     public void tellServerToRemove(String reqSender, String reqReceiver) throws RemoteException{
         serverInt.removeRequestFromDB(reqSender, reqReceiver);
     }
+    
+    public void tellServerToAdd(Client client, Client currClient) throws RemoteException{
+        serverInt.addToRequests(client, currClient);
+    }
+    
+    public Boolean checkUserName(String username) throws RemoteException{
+        if(serverInt.checkUserName(username)){
+            return true;
+        }
+        return false;
+    }
+    
+    public void signUp(ClientRegData clientRegData){
+        try {
+            serverInt.signUp(clientRegData);
+        } catch (RemoteException ex) {
+            Logger.getLogger(CallServerRMI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     @Override
     public String getName() {

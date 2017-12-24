@@ -2,9 +2,8 @@ package rmiinterfaces;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
-public class Client extends UnicastRemoteObject implements Serializable {
+public class Client implements Serializable {
 
     private String client_user_name;
     private String client_status;
@@ -17,10 +16,6 @@ public class Client extends UnicastRemoteObject implements Serializable {
 
     public void setClient_name(String client_name) {
         this.client_name = client_name;
-    }
-
-    public Client() throws RemoteException {
-
     }
 
     public String getClient_image() {

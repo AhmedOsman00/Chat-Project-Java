@@ -116,5 +116,27 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    @Override
+    public void addToRequests(Client client, Client currClient) throws RemoteException {
+        dbConn.addToRequestsTable(client, currClient);
+    }
+
+    @Override
+    public Boolean checkUserName(String username) throws RemoteException {
+        try {
+            if(dbConn.uniqueUserName(username)){
+              return true;  
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    @Override
+    public void signUp(ClientRegData clientRegData) throws RemoteException {
+        dbConn.insertClientInfo(clientRegData);
+    }
     
 }

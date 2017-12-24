@@ -1,17 +1,26 @@
 package chatapplication;
 
+import java.io.IOException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 import javafx.fxml.*;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import rmiinterfaces.*;
 
 public class ClientRegController implements Initializable, Service {
 
     @FXML
-    private TextField userNameTxt;
+    private Label usernameStatus;
     @FXML
-    private TextField emailTxt;
+    private Label passwordStatus;
+    @FXML
+    private TextField nameTxt;
+    @FXML
+    private TextField userNameTxt;
     @FXML
     private TextField passwordTxt;
     @FXML
@@ -31,7 +40,12 @@ public class ClientRegController implements Initializable, Service {
     @FXML
     private HBox topBar;
 
-    private static ClientRegController instance = new ClientRegController();
+    private final CallServerRMI iConnection = (CallServerRMI) ServiceLocator.getService("rmiService");
+    private ClientRegData clientRegData;
+
+    ToggleGroup genderGroup;
+
+    private static final ClientRegController instance = new ClientRegController();
 
     private ClientRegController() {
     }
@@ -42,17 +56,46 @@ public class ClientRegController implements Initializable, Service {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        ToggleGroup genderGroup = new ToggleGroup();
+        genderGroup = new ToggleGroup();
         genderGroup.getToggles().add(maleBtn);
+        maleBtn.setUserData("male");
         genderGroup.getToggles().add(femaleBtn);
+        femaleBtn.setUserData("female");
     }
 
-    public void signUp() {
-
+    public void signUp() throws RemoteException {
+        clientRegData = new ClientRegData();
+        if (!(nameTxt.getText().isEmpty() && userNameTxt.getText().isEmpty() && passwordTxt.getText().isEmpty()
+                && addressTxt.getText().isEmpty() && genderGroup.getSelectedToggle() == null)) {
+            if ((userNameTxt.getText().length() > 6) && (userNameTxt.getText().matches(""))) {
+                if (passwordTxt.getText().length() > 9) {
+                    if (!iConnection.checkUserName(userNameTxt.getText())) {
+                        clientRegData.setAddress(addressTxt.getText());
+                        clientRegData.setPassword(passwordTxt.getText());
+                        clientRegData.setClient_name(nameTxt.getText());
+                        clientRegData.setClient_user_name(userNameTxt.getText());
+                        clientRegData.setCountry(countryTxt.getSelectedText());
+                        clientRegData.setGender(genderGroup.getSelectedToggle().getUserData().toString());
+                        iConnection.signUp(clientRegData);
+                    } else {
+                        userNameTxt.setText("");
+                        usernameStatus.setText("Not available");
+                    }
+                } else {
+                    passwordTxt.setText("");
+                    passwordStatus.setText("Not valid");
+                }
+            } else {
+                userNameTxt.setText("");
+                usernameStatus.setText("Not valid");
+            }
+        }
     }
 
-    public void cancel() {
-
+    public void cancel() throws IOException {
+        Parent root =FXMLLoader.load(getClass().getResource("ClientLogForm.fxml"));
+        Scene scene=new Scene(root);
+        //stage
     }
 
     @Override
