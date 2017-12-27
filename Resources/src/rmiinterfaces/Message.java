@@ -1,13 +1,10 @@
-
 package rmiinterfaces;
 
-
 import java.io.Serializable;
-import java.util.*;
 
-public class Message implements Serializable{
-    
-    private ArrayList <Client> receiverName ;
+public class Message implements Serializable {
+
+    private Client receiverName;
     private Client senderName;
     private String font_type;
     private String font_size;
@@ -15,13 +12,17 @@ public class Message implements Serializable{
     private String msg_context;
     private String msg_date;
 
+    public Client getReceiverName() {
+        return receiverName;
+    }
+
+    public void setReceiverName(Client receiverName) {
+        this.receiverName = receiverName;
+    }
+
     @Override
     public String toString() {
         return "Message{" + "receiverName=" + receiverName + ", senderName=" + senderName + ", font_type=" + font_type + ", font_size=" + font_size + ", font_color=" + font_color + ", msg_context=" + msg_context + ", msg_date=" + msg_date + '}';
-    }
-
-    public ArrayList<Client> getReceiverName() {
-        return receiverName;
     }
 
     public Client getSenderName() {
@@ -42,10 +43,6 @@ public class Message implements Serializable{
 
     public String getMsg_context() {
         return msg_context;
-    }
-
-    public void setReceiverName(ArrayList<Client> receiverName) {
-        this.receiverName = receiverName;
     }
 
     public void setSenderName(Client senderName) {
@@ -76,6 +73,4 @@ public class Message implements Serializable{
         this.msg_date = msg_date;
     }
 
-    
-   
-} 
+}

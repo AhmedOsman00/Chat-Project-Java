@@ -13,12 +13,13 @@ public class DataBaseConnection implements Service {
     private PreparedStatement preparedStmt;
     private Statement stmt;
     private ResultSet resultSet;
-    private static DataBaseConnection instance = new DataBaseConnection();
+    private static DataBaseConnection instance;
     private ServerImpl serverImpl;
     private ArrayList<Client> contactlist;
     private ArrayList<Client> requestsList;
 
     private DataBaseConnection() {
+        instance = new DataBaseConnection();
         serverImpl = (ServerImpl) ServiceLocator.getService("serverImpl");
         try {
             DriverManager.registerDriver(new OracleDriver());
@@ -206,6 +207,8 @@ public class DataBaseConnection implements Service {
         }
         return false;
     }
+    
+    
 
     @Override
     public String getName() {

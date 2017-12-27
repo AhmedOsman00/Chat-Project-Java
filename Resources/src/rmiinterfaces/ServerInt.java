@@ -4,8 +4,7 @@ import java.rmi.*;
 import java.util.ArrayList;
 
 public interface ServerInt extends Remote {
-
-    void sendNotification(String notification) throws RemoteException;
+    
 
     void tellOthers(Message msg) throws RemoteException;
 
@@ -23,6 +22,6 @@ public interface ServerInt extends Remote {
 
     Boolean checkUserName(String username) throws RemoteException;
     
-    void signUp(ClientRegData clientRegData) throws RemoteException;
+    void signUp(ClientRegData clientRegData) throws RemoteException;   
 
 }

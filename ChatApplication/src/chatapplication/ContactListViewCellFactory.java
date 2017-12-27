@@ -1,5 +1,8 @@
 package chatapplication;
 
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
@@ -18,12 +21,19 @@ public class ContactListViewCellFactory implements Callback<ListView<Client>, Li
             private Circle status;
             private Label contactname;
             private ImageView contactImg;
+            private ChatController chatController = (ChatController) ServiceLocator.getService("chatController");
+
             @Override
             protected void updateItem(Client item, boolean empty) {
                 super.updateItem(item, empty);
+                contact = new HBox();
+                nameAndStatus = new VBox();
+                status = new Circle();
+                contactname = new Label();
+                contactImg = new ImageView();
                 contactname.setText(item.getClient_name());
                 contactImg.setImage(new Image(item.getClient_image()));
-                switch(item.getClient_status()){
+                switch (item.getClient_status()) {
                     case "online":
                         status.setFill(Paint.valueOf("GREEN"));
                         break;
@@ -40,16 +50,24 @@ public class ContactListViewCellFactory implements Callback<ListView<Client>, Li
                         status.setFill(Paint.valueOf("GREEN"));
                         break;
                 }
-                nameAndStatus.getChildren().addAll(contactname,status);
-                contact.getChildren().addAll(contactImg,nameAndStatus);
+                nameAndStatus.getChildren().addAll(contactname, status);
+                contact.getChildren().addAll(contactImg, nameAndStatus);
                 if (item == null || empty) {
                     setGraphic(null);
                 } else {
                     setGraphic(contact);
                 }
-                setOnMouseClicked((e)->{
+                setOnMouseClicked((e) -> {
                     contact.setId("contactItem");
-                    //contact.setBackground(new BackgroundFill(Paint.valueOf("#9e6ff"), CornerRadii.EMPTY, Insets.EMPTY));
+                    Message msg = new Message();
+                    msg.setReceiverName(item);
+                    chatController.setMsgVBox(ChatController.getMsgArea().get(item.getClient_user_name()));
+                    try {
+                        chatController.createMessage(msg);
+                        //contact.setBackground(new BackgroundFill(Paint.valueOf("#9e6ff"), CornerRadii.EMPTY, Insets.EMPTY));
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(ContactListViewCellFactory.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 });
             }
         };

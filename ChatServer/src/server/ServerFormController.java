@@ -1,4 +1,3 @@
-
 package server;
 
 import java.net.URL;
@@ -13,7 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-public class ServerFormController implements Initializable, Service{
+public class ServerFormController implements Initializable, Service {
 
     @FXML
     private TextField userNameTxt;
@@ -37,16 +36,18 @@ public class ServerFormController implements Initializable, Service{
     private BorderPane serverFormMainPane;
     @FXML
     private HBox topBar;
-    
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ToggleGroup genderGroup = new ToggleGroup();
         genderGroup.getToggles().add(maleBtn);
         genderGroup.getToggles().add(femaleBtn);
     }
-public void stop(){
-    
-}
+
+    public void stop() {
+
+    }
+
     @Override
     public String getName() {
         return "ServerFormController";
@@ -54,7 +55,7 @@ public void stop(){
 
     @Override
     public void excute() {
-       
+
     }
-    
+
 }

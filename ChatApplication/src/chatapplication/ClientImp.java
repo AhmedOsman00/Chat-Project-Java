@@ -13,6 +13,7 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
     private Client currentClient;
     private ArrayList<Client> requestsList;
     private static ClientImp instance;
+    private ChatController chatController=(ChatController) ServiceLocator.getService("chatController");
    
         
     private ClientImp() throws RemoteException{
@@ -31,7 +32,7 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
 
     @Override
     public void receiveNotification(String notification) throws RemoteException {
-        
+        chatController.updateOtherNotifications(notification);
     }
 
     @Override

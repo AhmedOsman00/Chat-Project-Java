@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 public class ClientLogFormController implements Initializable, Service {//remove from service locator
 
@@ -17,13 +18,14 @@ public class ClientLogFormController implements Initializable, Service {//remove
     private TextField userNameTxt;
     @FXML
     private TextField passwordTxt;
-
-    private final CallServerRMI iConnection = (CallServerRMI) ServiceLocator.getService("rmiService");
-
-    private static final ClientLogFormController instance = new ClientLogFormController();
+    private static ClientLogFormController instance = new ClientLogFormController();
+    private final CallServerRMI iConnection;
+    private Stage primaryStage;
+    private ClientUI main;
 
     private ClientLogFormController() {
-
+        main = (ClientUI) ServiceLocator.getService("main");        
+        iConnection = (CallServerRMI) ServiceLocator.getService("rmiService");    
     }
 
     public static ClientLogFormController getInstance() {
@@ -32,7 +34,7 @@ public class ClientLogFormController implements Initializable, Service {//remove
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
+        
     }
 
     @Override
@@ -40,7 +42,8 @@ public class ClientLogFormController implements Initializable, Service {//remove
         return "clientLogController";
     }
 
-    public void signUp() throws IOException {
+    public void signUp() throws IOException { 
+        primaryStage = main.getStage();
         FXMLLoader loader = new FXMLLoader();
         ClientLogFormController clientLogFormController = (ClientLogFormController) ServiceLocator.
                 getService("clientLogController");
@@ -48,11 +51,11 @@ public class ClientLogFormController implements Initializable, Service {//remove
         loader.setLocation(getClass().getResource("ClientLogForm.fxml"));
         Parent root = loader.load(getClass().getResource("ClientLogForm.fxml").openStream());
         Scene scene = new Scene(root);
-        //stage
+        primaryStage.setScene(scene);
     }
 
-    public void signIn() throws IOException {        
-        if (iConnection.regToServer(userNameTxt.getText(), passwordTxt.getText())) {            
+    public void signIn() throws IOException {
+        if (iConnection.regToServer(userNameTxt.getText(), passwordTxt.getText())) {
             FXMLLoader loader = new FXMLLoader();
             ChatController chatController = (ChatController) ServiceLocator.
                     getService("chatController");
@@ -60,7 +63,7 @@ public class ClientLogFormController implements Initializable, Service {//remove
             loader.setLocation(getClass().getResource("ClientUI.fxml"));
             Parent root = loader.load(getClass().getResource("ClientUI.fxml").openStream());
             Scene scene = new Scene(root);
-            //stage
+            primaryStage.setScene(scene);
         } else {
             //not valid
         }

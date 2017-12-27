@@ -10,13 +10,15 @@ public class InitialContext {
         }else if(jndiName.equalsIgnoreCase("rmiService")){
             return CallServerRMI.getInstance();
         }else if(jndiName.equalsIgnoreCase("clientRegController")){
-            return CallServerRMI.getInstance();
+            return ClientRegController.getInstance();
         }else if(jndiName.equalsIgnoreCase("clientLogController")){
             return ClientLogFormController.getInstance();
-        }else if(jndiName.equalsIgnoreCase(" clientServiceclientService")){
-            return ClientLogFormController.getInstance();
+        }else if(jndiName.equalsIgnoreCase("clientService")){
+            return ClientImp.getInstance();
+        }else if(jndiName.equalsIgnoreCase("main")){
+            return ClientUI.getInstance();
         }
-       
+        
         return null;
     }
 }

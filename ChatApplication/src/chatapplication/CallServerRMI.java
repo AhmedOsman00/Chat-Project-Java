@@ -8,7 +8,7 @@ import rmiinterfaces.*;
 
 public class CallServerRMI implements Service {
 
-    private ClientImp personalData= (ClientImp) ServiceLocator.getService("clientService");
+    private ClientImp personalData;
     private ServerInt serverInt;
     private static final CallServerRMI instance = new CallServerRMI();
 
@@ -18,6 +18,7 @@ public class CallServerRMI implements Service {
 
     private CallServerRMI() {
         try {
+            personalData= (ClientImp) ServiceLocator.getService("clientService");
             Registry reg = LocateRegistry.getRegistry(5005);
             serverInt = (ServerInt) reg.lookup("chatService");
         } catch (RemoteException ex) {
@@ -87,7 +88,7 @@ public class CallServerRMI implements Service {
             Logger.getLogger(CallServerRMI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     @Override
     public String getName() {
         return "rmiService";

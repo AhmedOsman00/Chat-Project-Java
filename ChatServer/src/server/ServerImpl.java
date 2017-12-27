@@ -8,16 +8,16 @@ import java.util.logging.*;
 import rmiinterfaces.*;
 
 public class ServerImpl extends UnicastRemoteObject implements ServerInt, Service {
-    
-    private static final ArrayList<ClientInt> clients = new ArrayList<>();
+
+    private static ArrayList<ClientInt> clients;
     private DataBaseConnection dbConn;
     private static ServerImpl instance;
     private ClientInt clientInt;
-    
+
     private ServerImpl() throws RemoteException {
-        
+        clients = new ArrayList<>();
     }
-    
+
     public static ServerImpl getInstance() {
         if (instance == null) {
             try {
@@ -29,32 +29,20 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
         return instance;
     }
 
-//    @Override
-//    public void signUp(ClientRegData regData){
-//        //call insert client info
-//        //call register
-//    }
     @Override
     public void tellOthers(Message msg) {//if the other user is offline dont send message to both
-        for (ClientInt clientRef : clients) {
-            for (Client clientReciverRef : msg.getReceiverName()) {
-                try {
-                    if (clientReciverRef.getClient_user_name().equals(clientRef.getCurrentClient().getClient_user_name())) {
-                        try {
-                            clientRef.receiveMsg(msg);
-                            System.out.println(msg);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } catch (RemoteException ex) {
-                    ex.printStackTrace();
+        try {
+            for (ClientInt clientRef : clients) {
+                if (msg.getReceiverName().getClient_user_name().equals(clientRef.getCurrentClient().getClient_user_name())) {
+                    clientRef.receiveMsg(msg);
+                    System.out.println(msg);
                 }
             }
-            
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
         }
     }
-    
+
     @Override
     public void register(String username, String password, ClientInt clientRef) {
         try {
@@ -71,33 +59,28 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @Override
     public void unregister(ClientInt clientRef) {
         clients.remove(clientRef);
     }
-    
+
     @Override
     public String getName() {
         return "serverImpl";
     }
-    
+
     @Override
     public void excute() {
-        
+
     }
-    
+
     @Override
     public ArrayList<Client> searchUserName(String client_user_name) throws RemoteException {
         dbConn = (DataBaseConnection) ServiceLocator.getService("dbConn");
         return dbConn.searchUserName(client_user_name);
     }
-    
-    @Override
-    public void sendNotification(String notification) throws RemoteException {
-        
-    }
-    
+
     @Override
     public void addUserName(Client ref, Client currRef) throws RemoteException {
         dbConn.acceptContact(ref, currRef);
@@ -125,8 +108,8 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
     @Override
     public Boolean checkUserName(String username) throws RemoteException {
         try {
-            if(dbConn.uniqueUserName(username)){
-              return true;  
+            if (dbConn.uniqueUserName(username)) {
+                return true;
             }
         } catch (SQLException ex) {
             Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -138,5 +121,15 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
     public void signUp(ClientRegData clientRegData) throws RemoteException {
         dbConn.insertClientInfo(clientRegData);
     }
-    
+
+    public void sendNotificationsToAll(String notification) {
+        for (ClientInt client : clients) {
+            try {
+                client.receiveNotification(notification);
+            } catch (RemoteException ex) {
+                Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
 }

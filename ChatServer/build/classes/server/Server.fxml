@@ -33,7 +33,7 @@
             <children>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.rowIndex="1">
                     <children>
-                        <TextArea prefHeight="170.0" prefWidth="300.0" promptText="Write your message here" />
+                        <TextArea fx:id="notificationTxt" prefHeight="170.0" prefWidth="300.0" promptText="Write your message here" />
                         <Button id="serverNotification" fx:id="serverNotification" mnemonicParsing="false" prefHeight="25.0" prefWidth="173.0" text="Send to all" />
                     </children>
                     <GridPane.margin>

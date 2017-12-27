@@ -23,5 +23,5 @@ public interface ClientInt extends Remote {
     
     public void addToContactList(Client client) throws RemoteException;
     
-    void updateNotifList(Client client) throws RemoteException;
+    void updateNotifList(Client client) throws RemoteException;   // requests 
 }

@@ -23,11 +23,18 @@ public class ServerController implements Initializable, Service {
     private Label offUsersVal;
     @FXML
     private Label onUsersVal;
-    private final IntegerProperty offProperty = new SimpleIntegerProperty();
-    private final IntegerProperty onProperty = new SimpleIntegerProperty();
-    private static ServerController instance = new ServerController();
+    @FXML
+    private TextArea notificationTxt;
+    private final IntegerProperty offProperty;
+    private final IntegerProperty onProperty;
+    private static ServerController instance;
+    private final ServerImpl serverImpl;
 
     private ServerController() {
+        offProperty = new SimpleIntegerProperty();
+        onProperty = new SimpleIntegerProperty();
+        instance = new ServerController();
+        serverImpl = (ServerImpl) ServiceLocator.getService("serverImpl");
     }
 
     public static ServerController getInstance() {
@@ -39,7 +46,7 @@ public class ServerController implements Initializable, Service {
         serverStart.setShape(new Circle(40));
         serverStart.setMaxSize(80, 80);
         serverStop.setShape(new Circle(40));
-        serverStop.setMaxSize(80, 80);        
+        serverStop.setMaxSize(80, 80);
     }
 
     public void stop() {
@@ -51,7 +58,7 @@ public class ServerController implements Initializable, Service {
     }
 
     public void sendNotification() {
-
+        serverImpl.sendNotificationsToAll(notificationTxt.getText());
     }
 
     public void showStatistics() {
