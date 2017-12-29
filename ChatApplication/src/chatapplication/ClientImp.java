@@ -31,7 +31,7 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
     }
 
     @Override
-    public void receiveNotification(String notification) throws RemoteException {
+    public void receiveNotification(String notification) throws RemoteException {        
         chatController.updateOtherNotifications(notification);
     }
 
@@ -58,7 +58,6 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
     @Override
     public void setCurrentClient(Client currentClient) throws RemoteException {        
         this.currentClient = currentClient;
-        System.out.println(currentClient);
     }
 
     @Override
@@ -84,10 +83,12 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
     @Override
     public void addToContactList(Client client) throws RemoteException {
         contactList.add(client);
+        chatController.setContactObservablelist(client);
     }
 
     @Override
     public void updateNotifList(Client client) throws RemoteException {
         requestsList.add(client);
+        chatController.setNotificationsList(client);
     }
 }

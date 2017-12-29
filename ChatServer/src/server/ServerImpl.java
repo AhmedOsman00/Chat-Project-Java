@@ -32,14 +32,12 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
     @Override
     public void tellOthers(Message msg) {//if the other user is offline dont send message to both
         try {
-            for (ClientInt clientRef : clients) {               
+            for (ClientInt clientRef : clients) {
                 if (msg.getReceiverName().getClient_user_name().equals(clientRef.getCurrentClient().getClient_user_name())) {
                     clientRef.receiveMsg(msg);
-                    System.out.println(msg.getMsg_context());
                 }
                 if (msg.getSenderName().getClient_user_name().equals(clientRef.getCurrentClient().getClient_user_name())) {
                     clientRef.receiveMsg(msg);
-                    System.out.println(msg.getMsg_context());
                 }
             }
         } catch (RemoteException ex) {
@@ -91,6 +89,9 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
             if (client.getCurrentClient().getClient_user_name().equals(ref.getClient_user_name())) {
                 client.addToContactList(currRef);
             }
+            if (client.getCurrentClient().getClient_user_name().equals(currRef.getClient_user_name())) {
+                client.addToContactList(ref);
+            }
         }
     }
 
@@ -104,9 +105,13 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
     }
 
     @Override
-    public void addToRequests(Client client, Client currClient) throws RemoteException {
-        System.out.println(currClient);            
-                dbConn.addToRequestsTable(client, currClient);                       
+    public void addToRequests(Client receiver, Client sender) throws RemoteException {
+        dbConn.addToRequestsTable(receiver, sender);
+        for (ClientInt client : clients) {
+            if (client.getCurrentClient().getClient_user_name().equals(receiver.getClient_user_name())) {
+                client.updateNotifList(sender);
+            }
+        }
     }
 
     @Override

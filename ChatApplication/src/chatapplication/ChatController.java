@@ -2,7 +2,6 @@ package chatapplication;
 
 import java.net.*;
 import java.rmi.RemoteException;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,8 +42,8 @@ public class ChatController implements Initializable, Service {
     @FXML
     private ComboBox<String> statusBox;
     @FXML
-    private ComboBox<Client> reqNotifications;
-    @FXML
+    private Button reqNotifications;
+    private ContextMenu reqNotifiPop;
     private ContextMenu notifiPopMenu;
     @FXML
     private TextField addContactField;
@@ -53,20 +52,13 @@ public class ChatController implements Initializable, Service {
     @FXML
     private ScrollPane messageScrollPane;
     @FXML
-    private ContextMenu popUpGroup;
-    @FXML
-    private Button createGroup;
-    @FXML
-    private Label createGrLbl;
-    @FXML
-    private ImageView createGroupIcon;
-    @FXML
     private Button createGrBtn;
+
     private ArrayList<Client> matchedUsers;
     private Stage primaryStage;
     private double xOffset = 0;
     private double yOffset = 0;
-    private static ChatController instance = new ChatController();
+    private static final ChatController instance = new ChatController();
     private CallServerRMI iConnection;
     private Client receiverClient;
     private ObservableList<Client> contactObservablelist;
@@ -76,7 +68,7 @@ public class ChatController implements Initializable, Service {
     private Message message;
     private static HashMap<String, VBox> vBoxesOfMsgs;
     private String lastClientName;
-    private Boolean flage;
+    private Boolean flag;
 
     public static HashMap<String, VBox> getMsgArea() {
         return vBoxesOfMsgs;
@@ -90,15 +82,26 @@ public class ChatController implements Initializable, Service {
         return instance;
     }
 
+    public void setContactObservablelist(Client client) {
+        Platform.runLater(() -> {
+            this.contactObservablelist.add(client);
+            vBoxesOfMsgs.put(client.getClient_user_name(), new VBox());
+        });
+    }
+
+    public void setNotificationsList(Client client) {
+        Platform.runLater(() -> {
+            this.notificationsList.add(client);
+        });
+
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
             personalData = (ClientImp) ServiceLocator.getService("clientService");
             vBoxesOfMsgs = new HashMap<>();
-//            reqNotifications.getButtonCell().setBorder(Border.EMPTY);
             notificationsList = FXCollections.observableArrayList(personalData.getRequestsList());
-            reqNotifications.setCellFactory(new RequestsCbListCellFactory());
-            reqNotifications.setItems(notificationsList);
             colorPicker.setValue(Color.DARKGREY);
             fontTypePicker.getItems().addAll(Font.getFamilies());
             fontSizePicker.getItems().addAll(10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40);
@@ -106,7 +109,6 @@ public class ChatController implements Initializable, Service {
             contactObservablelist = FXCollections.observableArrayList(personalData.getContactList());
             for (Client contactItem : personalData.getContactList()) {
                 vBoxesOfMsgs.put(contactItem.getClient_user_name(), new VBox());
-                vBoxesOfMsgs.get(contactItem.getClient_user_name()).getChildren().add(new Label("ahmed"));
             }
             contactListView.setCellFactory(new ContactListViewCellFactory());
             contactListView.setItems(contactObservablelist);
@@ -141,8 +143,6 @@ public class ChatController implements Initializable, Service {
 
     public void sendMsg(KeyEvent e) {
         if (e.getCode().equals(KeyCode.ENTER)) {
-            System.out.println(message.getSenderName().getClient_user_name());
-            System.out.println(message.getReceiverName().getClient_user_name());
             message.setMsg_context(typeMsgField.getText());
             iConnection.sendMsg(message);
         }
@@ -151,7 +151,6 @@ public class ChatController implements Initializable, Service {
     public void searchToAddUsers(KeyEvent e) throws RemoteException {
         if (e.getCode().equals(KeyCode.ENTER)) {
             notifiPopMenu = new ContextMenu();
-
             matchedUsers = iConnection.matchUsers(addContactField.getText());
             if (matchedUsers.isEmpty()) {
                 MenuItem notFoundItem = new MenuItem("User not found..");
@@ -164,39 +163,42 @@ public class ChatController implements Initializable, Service {
                     Label name = new Label();
                     Label reqSent = new Label("Request Sent");
                     name.setText(matchedUser.getClient_name());
-                    System.out.println(matchedUser.getClient_name());
                     // pic.setImage(new Image(matchedUser.getClient_image()));
-                    //for (Client contact : personalData.getContactList()) {
-                    //if (!matchedUser.getClient_user_name().equals(contact.getClient_user_name())) {
-                    Button add = new Button("Add");
-                    add.setOnAction((event) -> {
-                        System.out.println("add button");
-                        addAndName.getChildren().remove(add);
-                        addAndName.getChildren().add(reqSent);
-                        notifiPopMenu.show(addContactField.getScene().getWindow(), 1, 1);
-                        try {
-                            iConnection.tellServerToAdd(matchedUser, personalData.getCurrentClient());
-                            System.out.println(personalData.getCurrentClient().getClient_user_name());
-                        } catch (RemoteException ex) {
-                            Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+                    for (Client contact : personalData.getContactList()) {
+                        if (!(matchedUser.getClient_user_name().equals(contact.getClient_user_name())
+                                && matchedUser.getClient_user_name().equals(personalData.getCurrentClient()
+                                        .getClient_user_name()))) {
+                            Button add = new Button("Add");
+                            add.setOnAction((event) -> {                           
+                                addAndName.getChildren().remove(add);
+                                addAndName.getChildren().add(reqSent);
+                                notifiPopMenu.show(addContactField.getScene().getWindow(), 300, 300);
+                                try {
+                                    iConnection.tellServerToAdd(matchedUser, personalData.getCurrentClient());
+                                } catch (RemoteException ex) {
+                                    Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            });
+                            addAndName.getChildren().addAll(name, add);
+                        }else{
+                            addAndName.getChildren().addAll(name);
                         }
-                    });
-                    addAndName.getChildren().addAll(name, add);
-                    //}
-                    //}
-                    //addAndName.getChildren().addAll(name);
+                    }                    
                     notifBox.getChildren().addAll(pic, addAndName);
                     CustomMenuItem matchedUserItem = new CustomMenuItem(notifBox);
                     notifiPopMenu.getItems().add(matchedUserItem);
                 }
             }
-
-            notifiPopMenu.show(addContactField.getScene().getWindow(), 1, 1);
+            notifiPopMenu.show(addContactField.getScene().getWindow(),
+                    addContactField.getScene().getWindow().getX() + addContactField.getLayoutX() + 290,
+                    addContactField.getScene().getWindow().getY() + addContactField.getLayoutY() + addContactField.getHeight() + 65);
         }
     }
 
     public void updateOtherNotifications(String notification) {
-        otherNotificationsList.add(notification);
+        Platform.runLater(() -> {
+            otherNotificationsList.add(notification);
+        });
     }
 
     public void createMessage(Message msg) throws RemoteException {
@@ -213,8 +215,11 @@ public class ChatController implements Initializable, Service {
     }
 
     public void displayMsg(Message msg) {
-        System.out.println(msg.getReceiverName());
-        System.out.println(msg.getSenderName());
+        HBox msgLabel = new HBox();
+        Label msgText = new Label();
+        HBox firstMsg = new HBox();
+        ImageView imgClient;
+        msgLabel.setSpacing(3.0);
         Platform.runLater(() -> {
             try {
                 if (msg.getReceiverName().getClient_user_name().equals(personalData.getCurrentClient().getClient_user_name())) {
@@ -226,22 +231,16 @@ public class ChatController implements Initializable, Service {
                 Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-
-//        HBox msgLabel = new HBox();
-//        Label msgText = new Label();
-//        HBox firstMsg = new HBox();
-//        ImageView imgClient;
-//        msgLabel.setSpacing(3.0);
 //        if (m.getClientName().equalsIgnoreCase(name)) {
 //            imgClient = new ImageView(m.getClientImage());
 //            msgLabel.setAlignment(Pos.CENTER_RIGHT);
 //            msgText.getStyleClass().add("downRight");
 //            firstMsg.setAlignment(Pos.CENTER_RIGHT);
 //            msgLabel.getChildren().addAll(msgText, imgClient);
-//            if (falge && lastClientName != null) {
+//            if (flag && lastClientName != null) {
 //                msgTemp.getChildren().get(0).getStyleClass().clear();
 //                msgTemp.getChildren().get(0).getStyleClass().add("upRight");
-//                falge = false;
+//                flag = false;
 //            } else if (lastClientName != null) {
 //                msgTemp.getChildren().get(0).getStyleClass().clear();
 //                msgTemp.getChildren().get(0).getStyleClass().add("middleRight");
@@ -252,10 +251,10 @@ public class ChatController implements Initializable, Service {
 //            msgText.getStyleClass().add("downLeft");
 //            firstMsg.setAlignment(Pos.CENTER_LEFT);
 //            msgLabel.getChildren().addAll(imgClient, msgText);
-//            if (falge && lastClientName != null) {
+//            if (flag && lastClientName != null) {
 //                msgTemp.getChildren().get(1).getStyleClass().clear();
 //                msgTemp.getChildren().get(1).getStyleClass().add("upLeft");
-//                falge = false;
+//                flag = false;
 //            } else if (lastClientName != null) {
 //                msgTemp.getChildren().get(1).getStyleClass().clear();
 //                msgTemp.getChildren().get(1).getStyleClass().add("middleLeft");
@@ -275,7 +274,7 @@ public class ChatController implements Initializable, Service {
 //            Platform.runLater(() -> {
 //                chatArea.getChildren().addAll(firstMsg, msgLabel);
 //            });
-//            falge = true;
+//            flag = true;
 //            msgTemp = msgLabel;
 //            msgImage = imgClient;
 //            lastClientName = name;
@@ -287,7 +286,7 @@ public class ChatController implements Initializable, Service {
 //            Platform.runLater(() -> {
 //                chatArea.getChildren().addAll(firstMsg, msgLabel);
 //            });
-//            falge = true;
+//            flag = true;
 //            msgTemp = msgLabel;
 //            msgImage = imgClient;
 //            lastClientName = name;
@@ -313,6 +312,51 @@ public class ChatController implements Initializable, Service {
     public void createGroup() {
         //contactListView.setCellFactory(new CreateGrListviewCellFactory());
         contactListView.setItems(contactObservablelist);
+    }
+
+    public void retriveRequests() {
+        reqNotifiPop = new ContextMenu();
+        for (Client item : notificationsList) {
+            VBox notifContainer = new VBox();
+            HBox topHBox = new HBox();
+            HBox bottomHBox = new HBox();
+            Button acceptReqBtn = new Button("Accept");
+            Button removeReqBtn = new Button("Ignore");
+            Label client_name = new Label();
+            ImageView reqProfPic = new ImageView();
+            client_name.setText(item.getClient_name() + " sent you a friend request");
+            // reqProfPic.setImage(new Image(item.getClient_image()));
+            topHBox.getChildren().addAll(reqProfPic, client_name);
+            bottomHBox.getChildren().addAll(acceptReqBtn, removeReqBtn);
+            notifContainer.getChildren().addAll(topHBox, bottomHBox);
+            CustomMenuItem matchedUserItem = new CustomMenuItem(notifContainer);
+            reqNotifiPop.getItems().add(matchedUserItem);
+            reqNotifiPop.show(reqNotifications.getScene().getWindow(),
+                    reqNotifications.getScene().getWindow().getX() + reqNotifications.getLayoutX() + 290,
+                    reqNotifications.getScene().getWindow().getY() + reqNotifications.getLayoutY() + reqNotifications.getHeight() + 65);
+            acceptReqBtn.setOnAction((e) -> {
+                try {
+                    System.out.println("accept request");
+                    personalData.getContactList().add(item);
+                    iConnection.responseToRequest(item, personalData.getCurrentClient());
+                    reqNotifiPop.hide();
+                    notificationsList.remove(item);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+            removeReqBtn.setOnAction((e) -> {
+                try {
+                    System.out.println("ignore request");
+                    iConnection.tellServerToRemove(item.getClient_user_name(),
+                            personalData.getCurrentClient().getClient_user_name());
+                    reqNotifiPop.hide();
+                    notificationsList.remove(item);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+        }
     }
 
     @Override

@@ -51,7 +51,7 @@
                            <HBox.margin>
                               <Insets />
                            </HBox.margin></ImageView>
-                        <VBox fx:id="personalData" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="63.0">
+                        <VBox fx:id="personalData" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="31.0" prefWidth="68.0">
                            <children>
                               <Label fx:id="personName" prefHeight="17.0" prefWidth="49.0" text="Label" textFill="#24a9e2" />
                               <Circle fill="DODGERBLUE" radius="7.0" stroke="BLACK" strokeType="INSIDE" />
@@ -62,7 +62,7 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </HBox>
-                  <HBox fx:id="rightIcons" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="53.0" prefWidth="480.0" spacing="5.0">
+                  <HBox fx:id="rightIcons" alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="53.0" prefWidth="480.0" spacing="5.0">
                      <children>
                         <ComboBox fx:id="otherNotifications" prefHeight="25.0" prefWidth="76.0" />
                         <ComboBox fx:id="statusBox" prefHeight="25.0" prefWidth="64.0" />
@@ -71,22 +71,7 @@
                               <Image url="@../images/saveChat.png" />
                            </image>
                         </ImageView>
-                        <ComboBox fx:id="reqNotifications" prefHeight="25.0" prefWidth="56.0" />
-                        <ImageView fx:id="notificationsIcon" fitHeight="33.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/notifications.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="videoCall" fitHeight="33.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/videoCall.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="voiceChat" fitHeight="33.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/voiceCall.png" />
-                           </image>
-                        </ImageView>
+                        <Button fx:id="reqNotifications" mnemonicParsing="false" onAction="#retriveRequests" text="Button" />
                         <TextField fx:id="addContactField" onKeyPressed="#searchToAddUsers" prefHeight="25.0" prefWidth="94.0" promptText="Search Users..." />
                      </children>
                      <HBox.margin>

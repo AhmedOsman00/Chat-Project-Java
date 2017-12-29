@@ -19,6 +19,7 @@ public class ServerApplication extends Application implements Service {
         ServiceLocator.getService("rmiService");
         serverController = (ServerController) ServiceLocator.getService("serverController");       
         loader.setController(serverController);
+        loader.setLocation(getClass().getResource("Server.fxml"));
         Parent root = loader.load(getClass().getResource("Server.fxml").openStream());
         Scene scene = new Scene(root);
         stage.setScene(scene);

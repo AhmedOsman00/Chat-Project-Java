@@ -1,7 +1,29 @@
-/*
- * Empty Stylesheet file.
- */
-
-.mainFxmlClass {
-
+#gridpaneStyle {
+    -fx-background-color: #F4F8FB;   
+}
+#topBar{
+     -fx-background-color: #00ace6;
+}
+#signOutLink{
+    -fx-text-fill:#fff;
+     -fx-font-size: 15;
+    -fx-font-weight: bold;
+}
+#serverNotification,#serverStart,#serverStop,#serverStatictics{
+       -fx-background-color: #BBDAE8;
+}
+#notificationTxt{
+       -fx-border-radius: 3px;
+    -fx-border-style: solid;
+    -fx-border-color: #e1e1e1;
+}
+#offlinetxt{
+         -fx-font-size: 15;
+       
+        -fx-text-fill:red;
+}
+#onlineTxt{
+    -fx-font-size: 15;
+    
+    -fx-text-fill:green;
 }
