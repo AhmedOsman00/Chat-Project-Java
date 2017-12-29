@@ -32,10 +32,14 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
     @Override
     public void tellOthers(Message msg) {//if the other user is offline dont send message to both
         try {
-            for (ClientInt clientRef : clients) {
+            for (ClientInt clientRef : clients) {               
                 if (msg.getReceiverName().getClient_user_name().equals(clientRef.getCurrentClient().getClient_user_name())) {
                     clientRef.receiveMsg(msg);
-                    System.out.println(msg);
+                    System.out.println(msg.getMsg_context());
+                }
+                if (msg.getSenderName().getClient_user_name().equals(clientRef.getCurrentClient().getClient_user_name())) {
+                    clientRef.receiveMsg(msg);
+                    System.out.println(msg.getMsg_context());
                 }
             }
         } catch (RemoteException ex) {
@@ -46,11 +50,10 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
     @Override
     public void register(String username, String password, ClientInt clientRef) {
         try {
-            dbConn = (DataBaseConnection) ServiceLocator.getService("dbConn");
             if (dbConn.clientValidate(username, password)) {
                 clientRef.setCurrentClient(dbConn.fillData(username));
-                clientRef.setContactList(dbConn.getContactList());
-                clientRef.setRequestsList(dbConn.getAllRequests());
+                clientRef.setContactList(dbConn.getContactList(username));
+                clientRef.setRequestsList(dbConn.getAllRequests(username));
                 clients.add(clientRef);
             }
         } catch (SQLException ex) {
@@ -72,7 +75,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
 
     @Override
     public void excute() {
-
+        dbConn = (DataBaseConnection) ServiceLocator.getService("dbConn");
     }
 
     @Override
@@ -102,7 +105,8 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
 
     @Override
     public void addToRequests(Client client, Client currClient) throws RemoteException {
-        dbConn.addToRequestsTable(client, currClient);
+        System.out.println(currClient);            
+                dbConn.addToRequestsTable(client, currClient);                       
     }
 
     @Override

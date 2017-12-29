@@ -27,14 +27,14 @@ public class ServerController implements Initializable, Service {
     private TextArea notificationTxt;
     private final IntegerProperty offProperty;
     private final IntegerProperty onProperty;
-    private static ServerController instance;
+    private static ServerController  instance = new ServerController();
     private final ServerImpl serverImpl;
 
     private ServerController() {
         offProperty = new SimpleIntegerProperty();
-        onProperty = new SimpleIntegerProperty();
-        instance = new ServerController();
+        onProperty = new SimpleIntegerProperty();       
         serverImpl = (ServerImpl) ServiceLocator.getService("serverImpl");
+        serverImpl.excute();
     }
 
     public static ServerController getInstance() {

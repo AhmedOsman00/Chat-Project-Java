@@ -7,15 +7,18 @@ import javafx.stage.Stage;
 
 public class ServerApplication extends Application implements Service {
 
+    private ServerController serverController ;
+
     public ServerApplication() {
+        
     }
 
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader();
-        ServerController serverController = (ServerController) ServiceLocator.getService("serverController");
-        loader.setController(serverController);
         ServiceLocator.getService("rmiService");
+        serverController = (ServerController) ServiceLocator.getService("serverController");       
+        loader.setController(serverController);
         Parent root = loader.load(getClass().getResource("Server.fxml").openStream());
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -29,7 +32,7 @@ public class ServerApplication extends Application implements Service {
 
     @Override
     public String getName() {
-        return "serverController";
+        return "server";
     }
 
     @Override

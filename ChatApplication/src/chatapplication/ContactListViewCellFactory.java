@@ -31,44 +31,44 @@ public class ContactListViewCellFactory implements Callback<ListView<Client>, Li
                 status = new Circle();
                 contactname = new Label();
                 contactImg = new ImageView();
-                contactname.setText(item.getClient_name());
-                contactImg.setImage(new Image(item.getClient_image()));
-                switch (item.getClient_status()) {
-                    case "online":
-                        status.setFill(Paint.valueOf("GREEN"));
-                        break;
-                    case "offline":
-                        status.setFill(Paint.valueOf("GREY"));
-                        break;
-                    case "busy":
-                        status.setFill(Paint.valueOf("RED"));
-                        break;
-                    case "away":
-                        status.setFill(Paint.valueOf("YELLOW"));
-                        break;
-                    default:
-                        status.setFill(Paint.valueOf("GREEN"));
-                        break;
-                }
-                nameAndStatus.getChildren().addAll(contactname, status);
-                contact.getChildren().addAll(contactImg, nameAndStatus);
                 if (item == null || empty) {
                     setGraphic(null);
                 } else {
+                    contactname.setText(item.getClient_name());
+                    // contactImg.setImage(new Image(item.getClient_image()));
+                    switch (item.getClient_status()) {
+                        case "online":
+                            status.setFill(Paint.valueOf("GREEN"));
+                            break;
+                        case "offline":
+                            status.setFill(Paint.valueOf("GREY"));
+                            break;
+                        case "busy":
+                            status.setFill(Paint.valueOf("RED"));
+                            break;
+                        case "away":
+                            status.setFill(Paint.valueOf("YELLOW"));
+                            break;
+                        default:
+                            status.setFill(Paint.valueOf("GREEN"));
+                            break;
+                    }
+                    setOnMouseClicked((e) -> {
+                        // contact.setId("contactItem");
+                        Message msg = new Message();
+                        msg.setReceiverName(item);
+                        chatController.setMsgVBox(ChatController.getMsgArea().get(item.getClient_user_name()));
+                        try {
+                            chatController.createMessage(msg);
+                            //contact.setBackground(new BackgroundFill(Paint.valueOf("#9e6ff"), CornerRadii.EMPTY, Insets.EMPTY));
+                        } catch (RemoteException ex) {
+                            Logger.getLogger(ContactListViewCellFactory.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+                    nameAndStatus.getChildren().addAll(contactname, status);
+                    contact.getChildren().addAll(contactImg, nameAndStatus);
                     setGraphic(contact);
                 }
-                setOnMouseClicked((e) -> {
-                    contact.setId("contactItem");
-                    Message msg = new Message();
-                    msg.setReceiverName(item);
-                    chatController.setMsgVBox(ChatController.getMsgArea().get(item.getClient_user_name()));
-                    try {
-                        chatController.createMessage(msg);
-                        //contact.setBackground(new BackgroundFill(Paint.valueOf("#9e6ff"), CornerRadii.EMPTY, Insets.EMPTY));
-                    } catch (RemoteException ex) {
-                        Logger.getLogger(ContactListViewCellFactory.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                });
             }
         };
     }

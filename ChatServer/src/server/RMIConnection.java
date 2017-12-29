@@ -7,15 +7,14 @@ import rmiinterfaces.*;
 
 public class RMIConnection implements Service {
 
-    private static RMIConnection rmi_instance;
+    private static RMIConnection rmi_instance= new RMIConnection();
 
     public static RMIConnection getInstance() {
         return rmi_instance;
     }
 
     private RMIConnection() {
-        try {
-            rmi_instance = new RMIConnection();
+        try {           
             ServerInt serverObj = (ServerInt) ServiceLocator.getService("serverImpl");
             Registry reg = LocateRegistry.createRegistry(5005);
             reg.rebind("chatService", serverObj);

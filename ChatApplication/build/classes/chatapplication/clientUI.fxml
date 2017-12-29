@@ -88,11 +88,7 @@
                               <Image url="@../images/voiceCall.png" />
                            </image>
                         </ImageView>
-                        <TextField fx:id="addContactField" onKeyPressed="#searchToAddUsers" prefHeight="25.0" prefWidth="94.0" promptText="Search Users...">
-                           <contextMenu>
-                              <ContextMenu fx:id="notifiPopMenu" />
-                           </contextMenu>
-                        </TextField>
+                        <TextField fx:id="addContactField" onKeyPressed="#searchToAddUsers" prefHeight="25.0" prefWidth="94.0" promptText="Search Users..." />
                      </children>
                      <HBox.margin>
                         <Insets left="200.0" right="5.0" />
@@ -120,7 +116,7 @@
                <bottom>
                   <HBox fx:id="bottomBar" prefHeight="23.0" prefWidth="503.0" spacing="10.0" style="-fx-background-color: #F4F8FB;" BorderPane.alignment="CENTER">
                      <children>
-                        <TextField fx:id="typeMsgField" prefHeight="25.0" prefWidth="231.0" promptText="Type Your Message..." />
+                        <TextField fx:id="typeMsgField" onKeyReleased="#sendMsg" prefHeight="25.0" prefWidth="231.0" promptText="Type Your Message..." />
                         <ImageView fx:id="attachFileIcon" fitHeight="23.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <HBox.margin>
                               <Insets left="2.0" right="2.0" />

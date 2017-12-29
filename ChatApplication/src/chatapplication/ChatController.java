@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.*;
 import javafx.fxml.*;
-import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.input.*;
@@ -53,8 +53,6 @@ public class ChatController implements Initializable, Service {
     @FXML
     private ScrollPane messageScrollPane;
     @FXML
-    private ContextMenu popUpNotification;
-    @FXML
     private ContextMenu popUpGroup;
     @FXML
     private Button createGroup;
@@ -64,27 +62,28 @@ public class ChatController implements Initializable, Service {
     private ImageView createGroupIcon;
     @FXML
     private Button createGrBtn;
-    
-    
     private ArrayList<Client> matchedUsers;
     private Stage primaryStage;
     private double xOffset = 0;
     private double yOffset = 0;
-    private static ChatController instance = new ChatController();;
+    private static ChatController instance = new ChatController();
     private CallServerRMI iConnection;
     private Client receiverClient;
     private ObservableList<Client> contactObservablelist;
     private ObservableList<Client> notificationsList;
     private ObservableList<String> otherNotificationsList;
-    private ClientImp personalData ;
+    private ClientImp personalData;
     private Message message;
     private static HashMap<String, VBox> vBoxesOfMsgs;
-    public static HashMap<String, VBox> getMsgArea() {   
-        return vBoxesOfMsgs;        
+    private String lastClientName;
+    private Boolean flage;
+
+    public static HashMap<String, VBox> getMsgArea() {
+        return vBoxesOfMsgs;
     }
 
     private ChatController() {
-        
+
     }
 
     public static ChatController getInstance() {
@@ -96,11 +95,8 @@ public class ChatController implements Initializable, Service {
         try {
             personalData = (ClientImp) ServiceLocator.getService("clientService");
             vBoxesOfMsgs = new HashMap<>();
-            reqNotifications.getButtonCell().setBorder(Border.EMPTY);
+//            reqNotifications.getButtonCell().setBorder(Border.EMPTY);
             notificationsList = FXCollections.observableArrayList(personalData.getRequestsList());
-            for (Client requestItem : personalData.getRequestsList()) {
-                notificationsList.add(requestItem);
-            }
             reqNotifications.setCellFactory(new RequestsCbListCellFactory());
             reqNotifications.setItems(notificationsList);
             colorPicker.setValue(Color.DARKGREY);
@@ -110,7 +106,7 @@ public class ChatController implements Initializable, Service {
             contactObservablelist = FXCollections.observableArrayList(personalData.getContactList());
             for (Client contactItem : personalData.getContactList()) {
                 vBoxesOfMsgs.put(contactItem.getClient_user_name(), new VBox());
-                contactObservablelist.add(contactItem);
+                vBoxesOfMsgs.get(contactItem.getClient_user_name()).getChildren().add(new Label("ahmed"));
             }
             contactListView.setCellFactory(new ContactListViewCellFactory());
             contactListView.setItems(contactObservablelist);
@@ -145,47 +141,57 @@ public class ChatController implements Initializable, Service {
 
     public void sendMsg(KeyEvent e) {
         if (e.getCode().equals(KeyCode.ENTER)) {
+            System.out.println(message.getSenderName().getClient_user_name());
+            System.out.println(message.getReceiverName().getClient_user_name());
+            message.setMsg_context(typeMsgField.getText());
             iConnection.sendMsg(message);
         }
     }
 
     public void searchToAddUsers(KeyEvent e) throws RemoteException {
         if (e.getCode().equals(KeyCode.ENTER)) {
+            notifiPopMenu = new ContextMenu();
+
             matchedUsers = iConnection.matchUsers(addContactField.getText());
             if (matchedUsers.isEmpty()) {
                 MenuItem notFoundItem = new MenuItem("User not found..");
                 notifiPopMenu.getItems().add(notFoundItem);
             } else {
                 for (Client matchedUser : matchedUsers) {
-                    for (Client contact : personalData.getContactList()) {
-                        VBox addAndName = new VBox();
-                        HBox notifBox = new HBox();
-                        ImageView pic = new ImageView();
-                        Label name = new Label();
-                        Label reqSent = new Label("Request Sent");
-                        name.setText(matchedUser.getClient_name());
-                        pic.setImage(new Image(matchedUser.getClient_image()));
-                        if (!matchedUser.getClient_user_name().equals(contact.getClient_user_name())) {
-                            Button add = new Button("Add");
-                            add.setOnAction((event) -> {
-                                addAndName.getChildren().remove(add);
-                                addAndName.getChildren().add(reqSent);
-                                try {
-                                    iConnection.tellServerToAdd(contact, personalData.getCurrentClient());
-                                } catch (RemoteException ex) {
-                                    Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            });
-                            addAndName.getChildren().addAll(name, add);
+                    VBox addAndName = new VBox();
+                    HBox notifBox = new HBox();
+                    ImageView pic = new ImageView();
+                    Label name = new Label();
+                    Label reqSent = new Label("Request Sent");
+                    name.setText(matchedUser.getClient_name());
+                    System.out.println(matchedUser.getClient_name());
+                    // pic.setImage(new Image(matchedUser.getClient_image()));
+                    //for (Client contact : personalData.getContactList()) {
+                    //if (!matchedUser.getClient_user_name().equals(contact.getClient_user_name())) {
+                    Button add = new Button("Add");
+                    add.setOnAction((event) -> {
+                        System.out.println("add button");
+                        addAndName.getChildren().remove(add);
+                        addAndName.getChildren().add(reqSent);
+                        notifiPopMenu.show(addContactField.getScene().getWindow(), 1, 1);
+                        try {
+                            iConnection.tellServerToAdd(matchedUser, personalData.getCurrentClient());
+                            System.out.println(personalData.getCurrentClient().getClient_user_name());
+                        } catch (RemoteException ex) {
+                            Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        addAndName.getChildren().addAll(name);
-                        notifBox.getChildren().addAll(pic, addAndName);
-                        CustomMenuItem matchedUserItem = new CustomMenuItem(notifBox);
-                        notifiPopMenu.getItems().add(matchedUserItem);
-                        notifiPopMenu.show(addContactField, Side.BOTTOM, 0, 0);
-                    }
+                    });
+                    addAndName.getChildren().addAll(name, add);
+                    //}
+                    //}
+                    //addAndName.getChildren().addAll(name);
+                    notifBox.getChildren().addAll(pic, addAndName);
+                    CustomMenuItem matchedUserItem = new CustomMenuItem(notifBox);
+                    notifiPopMenu.getItems().add(matchedUserItem);
                 }
             }
+
+            notifiPopMenu.show(addContactField.getScene().getWindow(), 1, 1);
         }
     }
 
@@ -195,11 +201,10 @@ public class ChatController implements Initializable, Service {
 
     public void createMessage(Message msg) throws RemoteException {
         msg.setSenderName(personalData.getCurrentClient());
-        msg.setFont_color(colorPicker.getValue().toString());
-        msg.setFont_type(fontTypePicker.getValue());
-        msg.setFont_size(fontSizePicker.getValue().toString());
-        msg.setMsg_context(typeMsgField.getText());
-        msg.setMsg_date(LocalDateTime.now().toString());
+        //msg.setFont_color(colorPicker.getValue().toString());
+        //msg.setFont_type(fontTypePicker.getValue());
+//        msg.setFont_size(fontSizePicker.getValue().toString());        
+        //msg.setMsg_date(LocalDateTime.now().toString());
         message = msg;
     }
 
@@ -208,12 +213,25 @@ public class ChatController implements Initializable, Service {
     }
 
     public void displayMsg(Message msg) {
-        HBox msgLabel = new HBox();
-        Label msgText = new Label();
-        HBox firstMsg = new HBox();
-        ImageView imgClient;
-        msgLabel.setSpacing(3.0);
+        System.out.println(msg.getReceiverName());
+        System.out.println(msg.getSenderName());
+        Platform.runLater(() -> {
+            try {
+                if (msg.getReceiverName().getClient_user_name().equals(personalData.getCurrentClient().getClient_user_name())) {
+                    vBoxesOfMsgs.get(msg.getSenderName().getClient_user_name()).getChildren().add(new Label(msg.getMsg_context()));
+                } else {
+                    vBoxesOfMsgs.get(msg.getReceiverName().getClient_user_name()).getChildren().add(new Label(msg.getMsg_context()));
+                }
+            } catch (RemoteException ex) {
+                Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
 
+//        HBox msgLabel = new HBox();
+//        Label msgText = new Label();
+//        HBox firstMsg = new HBox();
+//        ImageView imgClient;
+//        msgLabel.setSpacing(3.0);
 //        if (m.getClientName().equalsIgnoreCase(name)) {
 //            imgClient = new ImageView(m.getClientImage());
 //            msgLabel.setAlignment(Pos.CENTER_RIGHT);
@@ -292,8 +310,8 @@ public class ChatController implements Initializable, Service {
 //        }
     }
 
-    public void createGroup(){
-        contactListView.setCellFactory(new CreateGrListviewCellFactory());
+    public void createGroup() {
+        //contactListView.setCellFactory(new CreateGrListviewCellFactory());
         contactListView.setItems(contactObservablelist);
     }
 

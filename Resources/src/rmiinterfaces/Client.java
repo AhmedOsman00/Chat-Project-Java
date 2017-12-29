@@ -1,7 +1,6 @@
 package rmiinterfaces;
 
 import java.io.Serializable;
-import java.rmi.RemoteException;
 
 public class Client implements Serializable {
 

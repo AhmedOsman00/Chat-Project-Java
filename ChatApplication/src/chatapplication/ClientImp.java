@@ -37,37 +37,38 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
 
     @Override
     public void receiveMsg(Message msg) throws RemoteException {
-        
+        chatController.displayMsg(msg);
     }
 
     @Override
     public ArrayList<Client> getContactList() throws RemoteException {
-        return null;
+        return contactList;
     }
 
     @Override
     public void setContactList(ArrayList<Client> contactList) throws RemoteException {
-        
+        this.contactList = contactList;
     }
 
     @Override
     public Client getCurrentClient() throws RemoteException {
-        return null;
+        return currentClient;
     }
 
     @Override
-    public void setCurrentClient(Client currentClient) throws RemoteException {
-        
+    public void setCurrentClient(Client currentClient) throws RemoteException {        
+        this.currentClient = currentClient;
+        System.out.println(currentClient);
     }
 
     @Override
     public ArrayList<Client> getRequestsList() throws RemoteException {
-        return null;
+        return requestsList;
     }
 
     @Override
     public void setRequestsList(ArrayList<Client> requestsList) throws RemoteException {
-        
+        this.requestsList = requestsList;
     }
 
     @Override

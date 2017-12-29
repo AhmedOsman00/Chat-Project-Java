@@ -72,6 +72,7 @@ public class CallServerRMI implements Service {
     
     public void tellServerToAdd(Client client, Client currClient) throws RemoteException{
         serverInt.addToRequests(client, currClient);
+        System.out.println(currClient);
     }
     
     public Boolean checkUserName(String username) throws RemoteException{
