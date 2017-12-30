@@ -89,6 +89,14 @@ public class CallServerRMI implements Service {
         }
     }
     
+    public void sendImage(byte[] imageInByte,Client client){
+        try {
+            serverInt.addImage(imageInByte,client);
+        } catch (RemoteException ex) {
+            Logger.getLogger(CallServerRMI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     @Override
     public String getName() {
         return "rmiService";

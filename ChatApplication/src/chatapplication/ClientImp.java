@@ -91,4 +91,9 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
         requestsList.add(client);
         chatController.setNotificationsList(client);
     }
+
+    @Override
+    public void updateImage() throws RemoteException {
+        
+    }
 }

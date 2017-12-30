@@ -1,19 +1,30 @@
 package server;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.rmi.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 import java.util.logging.*;
-import oracle.jdbc.*;
+import oracle.jdbc.OracleDriver;
+import oracle.jdbc.OraclePreparedStatement;
+import oracle.sql.BLOB;
 import rmiinterfaces.*;
+
 
 public class DataBaseConnection implements Service {
 
     private Connection connection;
     private PreparedStatement preparedStmt;
+    private OraclePreparedStatement oraclePreparedStatement;
     private Statement stmt;
     private ResultSet resultSet;
-    private static DataBaseConnection instance = new DataBaseConnection();
+    private static final DataBaseConnection instance = new DataBaseConnection();
     private ServerImpl serverImpl;
     private ArrayList<Client> contactlist;
     private ArrayList<Client> requestsList;
@@ -34,7 +45,7 @@ public class DataBaseConnection implements Service {
 
     public void insertAdminInfo() {
         try {
-            preparedStmt = connection.prepareStatement("INSERT INTO admin_data (admin_id, admin_user_name,"
+            preparedStmt =  connection.prepareStatement("INSERT INTO admin_data (admin_id, admin_user_name,"
                     + " admin_password, admin_gender ,admin_address, admin_email ) VALUES (?,?,?,?,?,?)",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             preparedStmt.setInt(1, 1);
@@ -53,11 +64,15 @@ public class DataBaseConnection implements Service {
         ArrayList<Client> matchedUsers = new ArrayList<>();
         try {
             stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            resultSet = stmt.executeQuery("select *  from client_data where client_user_name like '%"
+            resultSet =  stmt.executeQuery("select *  from client_data where client_user_name like '%"
                     + client_user_name + "%" + "'");
             while (resultSet.next()) {
                 Client client = new Client();
-//                client.setClient_image(resultSet.getString("client_pic"));
+                BLOB blob = (BLOB) resultSet.getObject("client_pic");
+                if (blob != null) {
+                    int blobLength = (int) blob.length();
+                    client.setClient_image(blob.getBytes(1, blobLength));
+                }
                 client.setClient_name(resultSet.getString("client_name"));
                 client.setClient_user_name(resultSet.getString("client_user_name"));
                 matchedUsers.add(client);
@@ -84,7 +99,6 @@ public class DataBaseConnection implements Service {
             preparedStmt = connection.prepareStatement("INSERT INTO client_data ("
                     + "client_user_name,client_password,client_gender,client_status,client_address,client_name) "
                     + "VALUES (?,?,?,?,?,?)", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            // preparedStmt.setString(1, "utl_raw.cast_to_raw('D:\\automobile.png')");
             preparedStmt.setString(1, clientRegData.getClient_user_name());
             preparedStmt.setString(2, clientRegData.getPassword());
             preparedStmt.setString(3, clientRegData.getGender());
@@ -112,7 +126,12 @@ public class DataBaseConnection implements Service {
         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         resultSet = stmt.executeQuery("select * from client_data where client_user_name = " + "'" + username + "'");
         if (resultSet.next()) {
-            client.setClient_image(resultSet.getString("client_pic"));
+            BLOB blob = (BLOB) resultSet.getObject("client_pic");
+            System.out.println((int)blob.length());
+            if (blob != null) {
+                int blobLength = (int) blob.length();
+                client.setClient_image(blob.getBytes(1, blobLength));
+            }
             client.setClient_status(resultSet.getString("client_status"));
             client.setClient_name(resultSet.getString("client_name"));
             client.setClient_user_name(username);
@@ -140,9 +159,13 @@ public class DataBaseConnection implements Service {
                     + "on cl.CONTACT_USER_NAME = cd.client_user_name where cl.client_user_name = " + "'" + username + "'");
             while (resultSet.next()) {
                 Client client = new Client();
+                BLOB blob = (BLOB)resultSet.getObject("client_pic");
+                if (blob != null) {
+                    int blobLength = (int) blob.length();
+                    client.setClient_image(blob.getBytes(1, blobLength));
+                }
                 client.setClient_user_name(resultSet.getString("contact_user_name"));
                 client.setClient_name(resultSet.getString("client_name"));
-                client.setClient_image(resultSet.getString("client_pic"));
                 client.setClient_status(resultSet.getString("client_status"));
                 contactlist.add(client);
             }
@@ -158,11 +181,15 @@ public class DataBaseConnection implements Service {
             stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             resultSet = stmt.executeQuery("select * from requests rq join client_data cd "
                     + "on rq.SENDER_USER_NAME = cd.client_user_name where rq.receiver_user_name = " + "'" + username + "'");
-           while (resultSet.next()) {
+            while (resultSet.next()) {
                 Client client = new Client();
+                BLOB blob = (BLOB)resultSet.getObject("client_pic");
+                if (blob != null) {
+                    int blobLength = (int) blob.length();
+                    client.setClient_image(blob.getBytes(1, blobLength));
+                }
                 client.setClient_user_name(resultSet.getString("client_user_name"));
                 client.setClient_name(resultSet.getString("client_name"));
-                //client.setClient_image(resultSet.getString("client_pic"));
                 client.setClient_status(resultSet.getString("client_status"));
                 requestsList.add(client);
             }
@@ -193,7 +220,6 @@ public class DataBaseConnection implements Service {
         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         stmt.executeUpdate("delete from requests where sender_user_name = " + "'" + reqSender + "'"
                 + " and receiver_user_name = " + "'" + reqReceiver + "'");
-        System.out.println("removed");
     }
 
     public void addToRequestsTable(Client receiver, Client sender) {
@@ -208,13 +234,25 @@ public class DataBaseConnection implements Service {
         }
     }
 
-    Boolean uniqueUserName(String username) throws SQLException {
+    public Boolean uniqueUserName(String username) throws SQLException {
         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         resultSet = stmt.executeQuery("select * from client_data where client_user_name = " + "'" + username + "'");
         if (resultSet.next()) {
             return true;
         }
         return false;
+    }
+
+    public void setImage(byte[] imageInByte, Client client) {
+        try {
+            InputStream in = new ByteArrayInputStream(imageInByte);
+            preparedStmt = connection.prepareStatement("UPDATE client_data set client_pic = ? where client_user_name = ?");
+            preparedStmt.setBinaryStream(1,in,imageInByte.length);
+            preparedStmt.setString(2, client.getClient_user_name());
+            preparedStmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

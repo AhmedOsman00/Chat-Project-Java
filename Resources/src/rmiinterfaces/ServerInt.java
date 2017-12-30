@@ -22,6 +22,8 @@ public interface ServerInt extends Remote {
 
     Boolean checkUserName(String username) throws RemoteException;
     
-    void signUp(ClientRegData clientRegData) throws RemoteException;   
+    void signUp(ClientRegData clientRegData) throws RemoteException;
+    
+    void addImage(byte[] imageInByte, Client client)throws RemoteException;
 
 }

@@ -1,5 +1,7 @@
 package chatapplication;
 
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.*;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -13,8 +15,10 @@ import javafx.scene.image.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.*;
 import javafx.stage.*;
+import javax.imageio.ImageIO;
 import rmiinterfaces.*;
 
 public class ChatController implements Initializable, Service {
@@ -43,8 +47,6 @@ public class ChatController implements Initializable, Service {
     private ComboBox<String> statusBox;
     @FXML
     private Button reqNotifications;
-    private ContextMenu reqNotifiPop;
-    private ContextMenu notifiPopMenu;
     @FXML
     private TextField addContactField;
     @FXML
@@ -53,6 +55,12 @@ public class ChatController implements Initializable, Service {
     private ScrollPane messageScrollPane;
     @FXML
     private Button createGrBtn;
+    @FXML
+    private ImageView profilePic;
+    @FXML
+    private Label personName;
+    @FXML
+    private Circle clientStatus;
 
     private ArrayList<Client> matchedUsers;
     private Stage primaryStage;
@@ -69,6 +77,11 @@ public class ChatController implements Initializable, Service {
     private static HashMap<String, VBox> vBoxesOfMsgs;
     private String lastClientName;
     private Boolean flag;
+    private ContextMenu reqNotifiPop;
+    private ContextMenu notifiPopMenu;
+    private FileChooser fileChooser;
+    private File file;
+    byte[] imageInByte;
 
     public static HashMap<String, VBox> getMsgArea() {
         return vBoxesOfMsgs;
@@ -100,6 +113,7 @@ public class ChatController implements Initializable, Service {
     public void initialize(URL url, ResourceBundle rb) {
         try {
             personalData = (ClientImp) ServiceLocator.getService("clientService");
+            setClientData();
             vBoxesOfMsgs = new HashMap<>();
             notificationsList = FXCollections.observableArrayList(personalData.getRequestsList());
             colorPicker.setValue(Color.DARKGREY);
@@ -115,6 +129,8 @@ public class ChatController implements Initializable, Service {
             otherNotificationsList = FXCollections.observableArrayList();
             otherNotifications.setItems(otherNotificationsList);
         } catch (RemoteException ex) {
+            Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -169,7 +185,7 @@ public class ChatController implements Initializable, Service {
                                 && matchedUser.getClient_user_name().equals(personalData.getCurrentClient()
                                         .getClient_user_name()))) {
                             Button add = new Button("Add");
-                            add.setOnAction((event) -> {                           
+                            add.setOnAction((event) -> {
                                 addAndName.getChildren().remove(add);
                                 addAndName.getChildren().add(reqSent);
                                 notifiPopMenu.show(addContactField.getScene().getWindow(), 300, 300);
@@ -180,10 +196,10 @@ public class ChatController implements Initializable, Service {
                                 }
                             });
                             addAndName.getChildren().addAll(name, add);
-                        }else{
+                        } else {
                             addAndName.getChildren().addAll(name);
                         }
-                    }                    
+                    }
                     notifBox.getChildren().addAll(pic, addAndName);
                     CustomMenuItem matchedUserItem = new CustomMenuItem(notifBox);
                     notifiPopMenu.getItems().add(matchedUserItem);
@@ -325,7 +341,7 @@ public class ChatController implements Initializable, Service {
             Label client_name = new Label();
             ImageView reqProfPic = new ImageView();
             client_name.setText(item.getClient_name() + " sent you a friend request");
-            // reqProfPic.setImage(new Image(item.getClient_image()));
+            //reqProfPic.setImage(new Image(item.getClient_image()));
             topHBox.getChildren().addAll(reqProfPic, client_name);
             bottomHBox.getChildren().addAll(acceptReqBtn, removeReqBtn);
             notifContainer.getChildren().addAll(topHBox, bottomHBox);
@@ -356,6 +372,57 @@ public class ChatController implements Initializable, Service {
                     Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             });
+        }
+    }
+
+    public void setContactData(Client client) {
+
+    }
+
+    public void setClientData() {
+        try {
+            if (personalData.getCurrentClient().getClient_image() != null) {
+                Image img = new Image(new ByteArrayInputStream(personalData.getCurrentClient().getClient_image()), 40, 48, true, true);
+                profilePic.setImage(img);
+                personName.setText(personalData.getCurrentClient().getClient_name());
+                switch (personalData.getCurrentClient().getClient_status()) {
+                    case "online":
+                        clientStatus.setFill(Paint.valueOf("GREEN"));
+                        break;
+                    case "offline":
+                        clientStatus.setFill(Paint.valueOf("GREY"));
+                        break;
+                    case "busy":
+                        clientStatus.setFill(Paint.valueOf("RED"));
+                        break;
+                    case "away":
+                        clientStatus.setFill(Paint.valueOf("YELLOW"));
+                        break;
+                    default:
+                        clientStatus.setFill(Paint.valueOf("GREEN"));
+                        break;
+                }
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void setImage() {
+        try {
+            fileChooser = new FileChooser();
+            file = fileChooser.showOpenDialog(minimizeIcon.getScene().getWindow());
+            if (file != null) {
+                BufferedImage originalImage = ImageIO.read(file);
+                ByteArrayOutputStream originalImageToBytes = new ByteArrayOutputStream();
+                ImageIO.write(originalImage, file.getName().substring(file.getName().lastIndexOf(".") + 1), originalImageToBytes);
+                originalImageToBytes.flush();
+                imageInByte = originalImageToBytes.toByteArray();
+                originalImageToBytes.close();
+                iConnection.sendImage(imageInByte, personalData.getCurrentClient());
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

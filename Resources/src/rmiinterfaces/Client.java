@@ -6,14 +6,14 @@ public class Client implements Serializable {
 
     private String client_user_name;
     private String client_status;
-    private Byte[] client_image;
+    private byte[] client_image;
     private String client_name;
 
-    public Byte[] getClient_image() {
+    public byte[] getClient_image() {
         return client_image;
     }
 
-    public void setClient_image(Byte[] client_image) {
+    public void setClient_image(byte[] client_image) {
         this.client_image = client_image;
     }
     

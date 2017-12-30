@@ -56,8 +56,8 @@
                   <Font name="Arial Rounded MT Bold" size="16.0" />
                </font>
             </Label>
-            <TextField fx:id="userNameTxt" layoutX="246.0" layoutY="283.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="41.0" prefWidth="315.0" promptText="Enter User Name..." />
-            <PasswordField fx:id="passwordTxt" layoutX="246.0" layoutY="340.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="41.0" prefWidth="316.0" promptText="Enter Your Password..." />
+            <TextField fx:id="userNameTxt" layoutX="246.0" layoutY="283.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="41.0" prefWidth="315.0" promptText="Enter User Name..." text="ahmedosman" />
+            <PasswordField fx:id="passwordTxt" layoutX="246.0" layoutY="340.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="41.0" prefWidth="316.0" promptText="Enter Your Password..." text="ahmed123456" />
             <Button fx:id="signOutBtn" layoutX="495.0" layoutY="403.0" mnemonicParsing="false" onAction="#signUp" prefHeight="31.0" prefWidth="67.0" text="Sign Up" />
             <Button fx:id="signInBtn" layoutX="421.0" layoutY="402.0" mnemonicParsing="false" onAction="#signIn" prefHeight="33.0" prefWidth="61.0" text="Sign In" />
          </children>

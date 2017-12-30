@@ -141,4 +141,15 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
         }
     }
 
+    @Override
+    public void addImage(byte[] imageInByte,Client client) throws RemoteException {
+       dbConn.setImage(imageInByte, client);
+       client.setClient_image(imageInByte);
+       for (ClientInt clientuser : clients) {
+           if(clientuser.getCurrentClient().getClient_user_name().equals(client.getClient_user_name())){
+               clientuser.updateImage();
+           }           
+        }
+    }
+
 }
