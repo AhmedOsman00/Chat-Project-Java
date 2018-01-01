@@ -532,7 +532,7 @@ public class ChatController implements Initializable, Service {
             for (Message usersMsg : messages) {
                 if ((usersMsg.getReceiverName().getClient_user_name().equals(receiverClient.getClient_user_name()) || (usersMsg.getSenderName().getClient_user_name().equals(receiverClient.getClient_user_name())))) {
                     MsgType msg = obj.createMsgType();
-                    if(personalData.getCurrentClient().getClient_user_name().equalsIgnoreCase(message.getReceiverName().getClient_user_name())){
+                    if(personalData.getCurrentClient().getClient_user_name().equalsIgnoreCase(message.getReceiverName().getClient_user_name())){                        
                         msg.setType("reciever");
                     }else{
                         msg.setType("sender");
