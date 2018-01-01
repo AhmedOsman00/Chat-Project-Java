@@ -16,7 +16,6 @@ import oracle.jdbc.OraclePreparedStatement;
 import oracle.sql.BLOB;
 import rmiinterfaces.*;
 
-
 public class DataBaseConnection implements Service {
 
     private Connection connection;
@@ -43,17 +42,15 @@ public class DataBaseConnection implements Service {
         return instance;
     }
 
-    public void insertAdminInfo() {
+    public void insertAdminInfo(ClientRegData adminRegData) {
         try {
-            preparedStmt =  connection.prepareStatement("INSERT INTO admin_data (admin_id, admin_user_name,"
-                    + " admin_password, admin_gender ,admin_address, admin_email ) VALUES (?,?,?,?,?,?)",
+            preparedStmt = connection.prepareStatement("INSERT INTO admin_data (admin_user_name,"
+                    + " admin_password, admin_gender ,admin_address) VALUES (?,?,?,?)",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            preparedStmt.setInt(1, 1);
-            preparedStmt.setString(2, "");
-            preparedStmt.setString(3, "");
-            preparedStmt.setString(4, "");
-            preparedStmt.setString(5, "");
-            preparedStmt.setString(6, "");
+            preparedStmt.setString(1, adminRegData.getClient_user_name());
+            preparedStmt.setString(2, adminRegData.getPassword());
+            preparedStmt.setString(3, adminRegData.getGender());
+            preparedStmt.setString(4, adminRegData.getAddress());
             preparedStmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,7 +61,7 @@ public class DataBaseConnection implements Service {
         ArrayList<Client> matchedUsers = new ArrayList<>();
         try {
             stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            resultSet =  stmt.executeQuery("select *  from client_data where client_user_name like '%"
+            resultSet = stmt.executeQuery("select *  from client_data where client_user_name like '%"
                     + client_user_name + "%" + "'");
             while (resultSet.next()) {
                 Client client = new Client();
@@ -94,6 +91,17 @@ public class DataBaseConnection implements Service {
         return false;
     }
 
+    public Boolean adminValidate(String admin_user_name, String password) throws SQLException {
+        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        resultSet = stmt.executeQuery("select * from admin_data where admin_user_name = " + "'" + admin_user_name + "'");
+        if (resultSet.first()) {
+            if (resultSet.getString("admin_password").equals(password)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void insertClientInfo(ClientRegData clientRegData) {
         try {
             preparedStmt = connection.prepareStatement("INSERT INTO client_data ("
@@ -127,7 +135,6 @@ public class DataBaseConnection implements Service {
         resultSet = stmt.executeQuery("select * from client_data where client_user_name = " + "'" + username + "'");
         if (resultSet.next()) {
             BLOB blob = (BLOB) resultSet.getObject("client_pic");
-            System.out.println((int)blob.length());
             if (blob != null) {
                 int blobLength = (int) blob.length();
                 client.setClient_image(blob.getBytes(1, blobLength));
@@ -140,11 +147,12 @@ public class DataBaseConnection implements Service {
         return null;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(String status,Client client) {
         try {
-            preparedStmt = connection.prepareStatement("INSERT INTO client_data (client_status) VALUES (?)",
+            preparedStmt = connection.prepareStatement("UPDATE client_data set client_status = ? where client_user_name = ?",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            preparedStmt.setString(1, "");
+            preparedStmt.setString(1,status);  
+            preparedStmt.setString(2,client.getClient_user_name());  
             preparedStmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -159,7 +167,7 @@ public class DataBaseConnection implements Service {
                     + "on cl.CONTACT_USER_NAME = cd.client_user_name where cl.client_user_name = " + "'" + username + "'");
             while (resultSet.next()) {
                 Client client = new Client();
-                BLOB blob = (BLOB)resultSet.getObject("client_pic");
+                BLOB blob = (BLOB) resultSet.getObject("client_pic");
                 if (blob != null) {
                     int blobLength = (int) blob.length();
                     client.setClient_image(blob.getBytes(1, blobLength));
@@ -183,7 +191,7 @@ public class DataBaseConnection implements Service {
                     + "on rq.SENDER_USER_NAME = cd.client_user_name where rq.receiver_user_name = " + "'" + username + "'");
             while (resultSet.next()) {
                 Client client = new Client();
-                BLOB blob = (BLOB)resultSet.getObject("client_pic");
+                BLOB blob = (BLOB) resultSet.getObject("client_pic");
                 if (blob != null) {
                     int blobLength = (int) blob.length();
                     client.setClient_image(blob.getBytes(1, blobLength));
@@ -247,7 +255,7 @@ public class DataBaseConnection implements Service {
         try {
             InputStream in = new ByteArrayInputStream(imageInByte);
             preparedStmt = connection.prepareStatement("UPDATE client_data set client_pic = ? where client_user_name = ?");
-            preparedStmt.setBinaryStream(1,in,imageInByte.length);
+            preparedStmt.setBinaryStream(1, in, imageInByte.length);
             preparedStmt.setString(2, client.getClient_user_name());
             preparedStmt.executeUpdate();
         } catch (SQLException ex) {
@@ -255,6 +263,33 @@ public class DataBaseConnection implements Service {
         }
     }
 
+    public int getOnUsersNum() throws SQLException {
+        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        resultSet = stmt.executeQuery("select count(*) from client_data where client_status = 'online'");
+        if (resultSet.next()) {
+            return resultSet.getInt(1);
+        }
+        return 0;
+    }
+
+    public int getOffUsersNum() throws SQLException {
+        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        resultSet = stmt.executeQuery("select count(*) from client_data where client_status = 'offline'");
+        if (resultSet.next()) {
+            return resultSet.getInt(1);
+        }
+        return 0;
+    }
+    
+    public int getAllUsersNum() throws SQLException {
+        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        resultSet = stmt.executeQuery("select count(*) from client_data");
+        if (resultSet.next()) {
+            return resultSet.getInt(1);
+        }
+        return 0;
+    }
+    
     @Override
     public String getName() {
         return "dbConn";

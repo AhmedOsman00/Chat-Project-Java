@@ -19,9 +19,17 @@
    <top>
       <HBox fx:id="topBar" alignment="TOP_RIGHT" prefHeight="38.0" prefWidth="703.0" BorderPane.alignment="CENTER">
          <children>
+            <Label fx:id="formTitle" text="Client Login" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="10.0" top="10.0" />
+               </HBox.margin>
+            </Label>
             <ImageView fx:id="minimizeIcon" fitHeight="19.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                <HBox.margin>
-                  <Insets left="640.0" right="10.0" top="12.0" />
+                  <Insets left="570.0" right="10.0" top="12.0" />
                </HBox.margin>
                <image>
                   <Image url="@../images/minimizeWindow.png" />

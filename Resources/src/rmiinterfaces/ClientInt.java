@@ -1,5 +1,7 @@
 package rmiinterfaces;
 
+import com.healthmarketscience.rmiio.RemoteInputStream;
+import java.io.InputStream;
 import java.rmi.*;
 import java.util.ArrayList;
 
@@ -26,4 +28,10 @@ public interface ClientInt extends Remote {
     void updateNotifList(Client client) throws RemoteException;   // requests 
     
     void updateImage() throws RemoteException;
+    
+    void receiveFile(RemoteInputStream data,String name) throws RemoteException;
+
+    void writeToFile(InputStream stream,String name) throws RemoteException;
+    
+    void updateStatus(String status) throws RemoteException;
 }

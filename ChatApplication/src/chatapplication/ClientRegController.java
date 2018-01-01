@@ -8,12 +8,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.*;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import rmiinterfaces.*;
 
 public class ClientRegController implements Initializable, Service {
@@ -44,6 +48,9 @@ public class ClientRegController implements Initializable, Service {
     private BorderPane clientFormMainPane;
     @FXML
     private HBox topBar;
+
+    private double xOffset = 0;
+    private double yOffset = 0;
     private Stage primaryStage;
     private final CallServerRMI iConnection;
     private ClientRegData clientRegData;
@@ -79,7 +86,7 @@ public class ClientRegController implements Initializable, Service {
         clientRegData = new ClientRegData();
         if (!(nameTxt.getText().isEmpty() && userNameTxt.getText().isEmpty() && passwordTxt.getText().isEmpty()
                 && addressTxt.getText().isEmpty() && genderGroup.getSelectedToggle() == null)) {
-            if ((userNameTxt.getText().length() > 6) ){
+            if ((userNameTxt.getText().length() > 6)) {
 //                    && (userNameTxt.getText().matches(""))) {
                 if (passwordTxt.getText().length() > 9) {
                     if (!iConnection.checkUserName(userNameTxt.getText())) {
@@ -97,8 +104,21 @@ public class ClientRegController implements Initializable, Service {
                             loader.setController(clientLogController);
                             loader.setLocation(getClass().getResource("ClientLogForm.fxml"));
                             Parent root = loader.load(getClass().getResource("ClientLogForm.fxml").openStream());
+                            root.setOnMousePressed(new EventHandler<MouseEvent>() {
+                                @Override
+                                public void handle(MouseEvent event) {
+                                    xOffset = event.getSceneX();
+                                    yOffset = event.getSceneY();
+                                }
+                            });
+                            root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+                                @Override
+                                public void handle(MouseEvent event) {
+                                    primaryStage.setX(event.getScreenX() - xOffset);
+                                    primaryStage.setY(event.getScreenY() - yOffset);
+                                }
+                            });
                             Scene scene = new Scene(root);
-                            // primaryStage.initStyle(StageStyle.UNDECORATED);
                             primaryStage.setScene(scene);
                         } catch (IOException ex) {
                             Logger.getLogger(ClientRegController.class.getName()).log(Level.SEVERE, null, ex);
@@ -125,9 +145,31 @@ public class ClientRegController implements Initializable, Service {
         loader.setController(clientLogController);
         loader.setLocation(getClass().getResource("ClientLogForm.fxml"));
         Parent root = loader.load(getClass().getResource("ClientLogForm.fxml").openStream());
+        root.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            }
+        });
+        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                primaryStage.setX(event.getScreenX() - xOffset);
+                primaryStage.setY(event.getScreenY() - yOffset);
+            }
+        });
         Scene scene = new Scene(root);
-        // primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setScene(scene);
+    }
+
+    public void minimizeStage(MouseEvent event) {
+        primaryStage = (Stage) ((Node) (event.getSource())).getScene().getWindow();
+        primaryStage.setIconified(true);
+    }
+
+    public void closeStage(MouseEvent event) {
+        ((Node) (event.getSource())).getScene().getWindow().hide();
     }
 
     @Override

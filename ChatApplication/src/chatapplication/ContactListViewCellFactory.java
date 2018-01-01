@@ -1,17 +1,14 @@
 package chatapplication;
 
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.rmi.RemoteException;
 import java.util.logging.*;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.*;
 import javafx.util.Callback;
-import javax.imageio.ImageIO;
 import rmiinterfaces.*;
 
 public class ContactListViewCellFactory implements Callback<ListView<Client>, ListCell<Client>> {
@@ -37,13 +34,10 @@ public class ContactListViewCellFactory implements Callback<ListView<Client>, Li
                 if (item == null || empty) {
                     setGraphic(null);
                 } else {
-                    try {
                         contactname.setText(item.getClient_name());
                         if (item.getClient_image() != null) {
-                            InputStream in = new ByteArrayInputStream(item.getClient_image());
-                            BufferedImage bufferedImage = ImageIO.read(in);
-                            Image clientImage = SwingFXUtils.toFXImage(bufferedImage, null);
-                            contactImg.setImage(clientImage);
+                            Image img = new Image(new ByteArrayInputStream(item.getClient_image()), 50, 50, true, true);
+                            contactImg.setImage(img);
                         }
                         switch (item.getClient_status()) {
                             case "online":
@@ -64,22 +58,16 @@ public class ContactListViewCellFactory implements Callback<ListView<Client>, Li
                         }
                         setOnMouseClicked((e) -> {
                             // contact.setId("contactItem");
-                            try {
                                 Message msg = new Message();
                                 msg.setReceiverName(item);
                                 chatController.setMsgVBox(ChatController.getMsgArea().get(item.getClient_user_name()));
-                                chatController.createMessage(msg);
+                                chatController.setReceiverClient(item);
+                                chatController.setContactData();
                                 //contact.setBackground(new BackgroundFill(Paint.valueOf("#9e6ff"), CornerRadii.EMPTY, Insets.EMPTY));
-                            } catch (RemoteException ex) {
-                                Logger.getLogger(ContactListViewCellFactory.class.getName()).log(Level.SEVERE, null, ex);
-                            }
                         });
                         nameAndStatus.getChildren().addAll(contactname, status);
                         contact.getChildren().addAll(contactImg, nameAndStatus);
                         setGraphic(contact);
-                    } catch (IOException ex) {
-                        Logger.getLogger(ContactListViewCellFactory.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                 }
             }
         };

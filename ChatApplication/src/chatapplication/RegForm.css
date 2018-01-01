@@ -26,5 +26,5 @@
      -fx-background-color: #BBDAE8;
 }
 #addressTxt,#passwordTxt,#userNameTxt,#nameTxt{
-   -fx-text-fill: red;
+   -fx-text-fill: #990000;
 }

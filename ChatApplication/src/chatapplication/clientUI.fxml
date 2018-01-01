@@ -17,9 +17,9 @@
 
 <BorderPane id="AnchorPane" fx:id="mainPane" prefHeight="564.0" prefWidth="747.0" stylesheets="@clientUI.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <top>
-      <HBox fx:id="topBar" alignment="TOP_RIGHT" onMouseClicked="#topBarMousePressed" onMouseDragged="#topBarMouseDragged" prefHeight="38.0" prefWidth="703.0" BorderPane.alignment="CENTER_RIGHT">
+      <HBox fx:id="topBar" alignment="TOP_RIGHT" prefHeight="38.0" prefWidth="703.0" BorderPane.alignment="CENTER_RIGHT">
          <children>
-            <ImageView fx:id="minimizeIcon" fitHeight="19.0" fitWidth="15.0" onMouseReleased="#minimizeStage" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="minimizeIcon" fitHeight="19.0" fitWidth="15.0" onMouseClicked="#minimizeStage" pickOnBounds="true" preserveRatio="true">
                <HBox.margin>
                   <Insets left="640.0" right="10.0" top="12.0" />
                </HBox.margin>
@@ -27,7 +27,7 @@
                   <Image url="@../images/minimizeWindow.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="closeIcon" fitHeight="19.0" fitWidth="15.0" onMouseReleased="#closeStage" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="closeIcon" fitHeight="19.0" fitWidth="15.0" onMouseClicked="#closeStage" pickOnBounds="true" preserveRatio="true">
                <HBox.margin>
                   <Insets left="10.0" right="15.0" top="12.0" />
                </HBox.margin>
@@ -40,21 +40,21 @@
    <center>
       <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <top>
-            <HBox fx:id="iconsBar" prefHeight="53.0" prefWidth="492.0" BorderPane.alignment="CENTER">
+            <HBox fx:id="iconsBar" prefHeight="65.0" prefWidth="492.0" BorderPane.alignment="CENTER">
                <children>
-                  <HBox fx:id="contactPersonalInfo" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="53.0" prefWidth="250.0" spacing="5.0">
+                  <HBox fx:id="contactPersonalInfo" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="76.0" prefWidth="244.0" spacing="5.0">
                      <children>
-                        <ImageView fx:id="profilePic" fitHeight="99.0" fitWidth="84.0" onMouseClicked="#setImage" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="profilePic" fitHeight="85.0" fitWidth="61.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/defaultProfilePic.png" />
+                              <Image url="@../images/male.png" />
                            </image>
                            <HBox.margin>
-                              <Insets />
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin></ImageView>
-                        <VBox fx:id="personalData" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="31.0" prefWidth="61.0">
+                        <VBox fx:id="personalData" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="47.0" prefWidth="127.0">
                            <children>
-                              <Label fx:id="personName" prefHeight="17.0" prefWidth="72.0" text="Label" textFill="#24a9e2" />
-                              <Circle fx:id="clientStatus" fill="DODGERBLUE" radius="7.0" stroke="#f4f8fb0a" strokeType="INSIDE" />
+                              <Label fx:id="personName" prefHeight="17.0" prefWidth="113.0" text="Label" textFill="#24a9e2" />
+                              <Circle fx:id="clientStatus" fill="DODGERBLUE" radius="7.0" stroke="BLACK" strokeType="INSIDE" />
                            </children>
                         </VBox>
                      </children>
@@ -62,20 +62,43 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </HBox>
-                  <HBox fx:id="rightIcons" alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="53.0" prefWidth="480.0" spacing="5.0">
+                  <HBox fx:id="rightIcons" alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="62.0" prefWidth="516.0" spacing="5.0">
                      <children>
-                        <ComboBox fx:id="otherNotifications" prefHeight="25.0" prefWidth="76.0" />
-                        <ComboBox fx:id="statusBox" prefHeight="25.0" prefWidth="64.0" />
-                        <ImageView fx:id="saveChat" fitHeight="33.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true">
+                            
+                        <ImageView fx:id="saveChat" disable="true" fitHeight="36.0" fitWidth="59.0" onMouseClicked="#createXML" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/saveChat.png" />
+                              <Image url="@../images/1514648745753.png" />
                            </image>
                         </ImageView>
-                        <Button fx:id="reqNotifications" mnemonicParsing="false" onAction="#retriveRequests" text="Button" />
-                        <TextField fx:id="addContactField" onKeyPressed="#searchToAddUsers" prefHeight="25.0" prefWidth="94.0" promptText="Search Users..." />
+                        <ComboBox fx:id="statusBox" prefHeight="28.0" prefWidth="107.0" promptText="Status" />
+                        <ComboBox fx:id="otherNotifications" prefHeight="30.0" prefWidth="133.0" promptText="Notifications" stylesheets="@clientUI.css" />  
+                        <Button fx:id="reqNotifications" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#retriveRequests" prefHeight="28.0" prefWidth="67.0">
+                            <graphic>
+      <ImageView fitHeight="25.0" fitWidth="49.0">
+        <image>
+          <Image url="@../images/notif1.png" />
+        </image>
+      </ImageView>
+   </graphic>
+                           <HBox.margin>
+                              <Insets top="2.0" />
+                           </HBox.margin>
+</Button>
+                        <TextField fx:id="addContactField" onKeyPressed="#searchToAddUsers" prefHeight="36.0" prefWidth="114.0" promptText="Search Users...">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin></TextField>
+                        <ImageView fitHeight="26.0" fitWidth="63.0" onMouseClicked="#searchToAddUsers" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/search.png" />
+                           </image>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </ImageView>
                      </children>
                      <HBox.margin>
-                        <Insets left="160.0" right="5.0" />
+                        <Insets left="50.0" right="5.0" />
                      </HBox.margin>
                   </HBox>
                </children>
@@ -86,14 +109,17 @@
                <top>
                   <HBox fx:id="ContactInfoHBox" prefHeight="62.0" prefWidth="501.0" spacing="10.0" BorderPane.alignment="CENTER">
                      <children>
-                        <ImageView fx:id="contactProfIcon" fitHeight="43.0" fitWidth="51.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="contactProfIcon" fitHeight="91.0" fitWidth="72.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/myProfPic.png" />
-                           </image></ImageView>
-                        <VBox prefHeight="28.0" prefWidth="100.0">
+                              <Image url="@../images/female.png" />
+                           </image>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin></ImageView>
+                        <VBox prefHeight="55.0" prefWidth="177.0">
                            <children>
-                              <Label fx:id="contactName" maxWidth="-Infinity" prefHeight="17.0" prefWidth="51.0" text="name" />
-                              <Circle fx:id="contactStatus" fill="DODGERBLUE" radius="7.0" stroke="#f4f8fb" strokeType="INSIDE" />
+                              <Label fx:id="contactName" maxWidth="-Infinity" prefHeight="17.0" prefWidth="134.0" text="name" />
+                              <Circle fx:id="contactStatus" fill="DODGERBLUE" radius="7.0" stroke="BLACK" strokeType="INSIDE" />
                            </children>
                         </VBox>
                      </children>
@@ -103,41 +129,67 @@
                   </HBox>
                </top>
                <bottom>
-                  <HBox fx:id="bottomBar" prefHeight="23.0" prefWidth="503.0" spacing="10.0" style="-fx-background-color: #F4F8FB;" BorderPane.alignment="CENTER">
+                  <HBox fx:id="bottomBar" prefHeight="50.0" prefWidth="503.0" spacing="8.0" style="-fx-background-color: #F4F8FB;" BorderPane.alignment="CENTER">
                      <children>
-                        <TextField fx:id="typeMsgField" disable="true" onKeyReleased="#sendMsg" prefHeight="25.0" prefWidth="231.0" promptText="Type Your Message..." />
-                        <ImageView fx:id="attachFileIcon" fitHeight="23.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <TextField fx:id="typeMsgField" disable="true" onKeyReleased="#sendMsg" prefHeight="25.0" prefWidth="224.0" promptText="Type Your Message...">
                            <HBox.margin>
-                              <Insets left="2.0" right="2.0" />
+                              <Insets top="4.0" />
+                           </HBox.margin></TextField>
+                        <ImageView fx:id="send" disable="true" fitHeight="34.0" fitWidth="56.0" onMouseClicked="#sendMsg" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/twitter-marketing.png" />
+                           </image>
+                           <HBox.margin>
+                              <Insets right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </ImageView>
+                        <ImageView fx:id="attachFileIcon" disable="true" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#sendFile" pickOnBounds="true" preserveRatio="true">
+                           <HBox.margin>
+                              <Insets right="2.0" top="10.0" />
                            </HBox.margin>
                            <image>
                               <Image url="@../images/attachFile.png" />
                            </image></ImageView>
-                        <ColorPicker fx:id="colorPicker" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="84.0" promptText="DarkGrey" />
-                        <ComboBox fx:id="fontTypePicker" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="83.0" promptText="Thoma" />
-                        <ComboBox fx:id="fontSizePicker" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="58.0" promptText="16">
+                        <ColorPicker fx:id="colorPicker" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="28.0" prefWidth="58.0" promptText="DarkGrey">
                            <HBox.margin>
-                              <Insets />
+                              <Insets top="10.0" />
+                           </HBox.margin></ColorPicker>
+                        <ComboBox fx:id="fontTypePicker" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="28.0" prefWidth="91.0" promptText="Thoma">
+                           <HBox.margin>
+                              <Insets top="9.0" />
+                           </HBox.margin></ComboBox>
+                        <ComboBox fx:id="fontSizePicker" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="28.0" prefWidth="58.0" promptText="16">
+                           <HBox.margin>
+                              <Insets top="9.0" />
                            </HBox.margin>
                         </ComboBox>
                      </children>
                      <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </padding>
+                     <BorderPane.margin>
+                        <Insets />
+                     </BorderPane.margin>
                   </HBox>
                </bottom>
                <center>
-                  <ScrollPane fx:id="messageScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER" />
+                  <ScrollPane fx:id="messageScrollPane" hbarPolicy="NEVER" prefHeight="334.0" prefWidth="536.0" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
          </center>
          <left>
-            <VBox prefHeight="473.0" prefWidth="209.0" BorderPane.alignment="CENTER">
+            <VBox prefHeight="460.0" prefWidth="187.0" BorderPane.alignment="CENTER">
                <children>
-                  <HBox fx:id="createGrBox" alignment="CENTER" prefHeight="87.0" prefWidth="209.0" spacing="15.0" style="-fx-border-color: #BEBEBE; -fx-background-color: #F4F8FB;">
+                  <HBox fx:id="createGrBox" alignment="CENTER" prefHeight="92.0" prefWidth="209.0" spacing="10.0" style="-fx-border-color: #BEBEBE; -fx-background-color: #F4F8FB;">
                      <children>
-                        <TextField fx:id="groupNameField" prefHeight="25.0" prefWidth="123.0" promptText="Enter Group Name..." />
-                        <Button fx:id="createGrBtn" disable="true" mnemonicParsing="false" onAction="#createGroup" text="Done" />
+                        <TextField fx:id="groupNameField" prefHeight="31.0" prefWidth="92.0" promptText="Enter Group Name...">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin></TextField>
+                        <Button fx:id="createGrBtn" disable="true" mnemonicParsing="false" onAction="#createGroup" prefHeight="17.0" prefWidth="51.0" text="Done">
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin></Button>
                      </children>
                   </HBox>
                   <ListView fx:id="contactListView" prefHeight="432.0" prefWidth="209.0" />
