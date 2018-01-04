@@ -27,47 +27,51 @@ public class ContactListViewCellFactory implements Callback<ListView<Client>, Li
             protected void updateItem(Client item, boolean empty) {
                 super.updateItem(item, empty);
                 contact = new HBox();
+                contact.setSpacing(10);
                 nameAndStatus = new VBox();
-                status = new Circle();
+                nameAndStatus.setSpacing(5);
+                status = new Circle(7.0);
                 contactname = new Label();
                 contactImg = new ImageView();
+                contactImg.setFitHeight(40);
+                contactImg.setFitWidth(40);
                 if (item == null || empty) {
                     setGraphic(null);
                 } else {
-                        contactname.setText(item.getClient_name());
-                        if (item.getClient_image() != null) {
-                            Image img = new Image(new ByteArrayInputStream(item.getClient_image()), 50, 50, true, true);
-                            contactImg.setImage(img);
-                        }
-                        switch (item.getClient_status()) {
-                            case "online":
-                                status.setFill(Paint.valueOf("GREEN"));
-                                break;
-                            case "offline":
-                                status.setFill(Paint.valueOf("GREY"));
-                                break;
-                            case "busy":
-                                status.setFill(Paint.valueOf("RED"));
-                                break;
-                            case "away":
-                                status.setFill(Paint.valueOf("YELLOW"));
-                                break;
-                            default:
-                                status.setFill(Paint.valueOf("GREEN"));
-                                break;
-                        }
-                        setOnMouseClicked((e) -> {
-                            // contact.setId("contactItem");
-                                Message msg = new Message();
-                                msg.setReceiverName(item);
-                                chatController.setMsgVBox(ChatController.getMsgArea().get(item.getClient_user_name()));
-                                chatController.setReceiverClient(item);
-                                chatController.setContactData();
-                                //contact.setBackground(new BackgroundFill(Paint.valueOf("#9e6ff"), CornerRadii.EMPTY, Insets.EMPTY));
-                        });
-                        nameAndStatus.getChildren().addAll(contactname, status);
-                        contact.getChildren().addAll(contactImg, nameAndStatus);
-                        setGraphic(contact);
+                    contactname.setText(item.getClient_name());
+                    if (item.getClient_image() != null) {
+                        Image img = new Image(new ByteArrayInputStream(item.getClient_image()), 40, 40, true, true);
+                        contactImg.setImage(img);
+                    }
+                    switch (item.getClient_status()) {
+                        case "online":
+                            status.setFill(Paint.valueOf("GREEN"));
+                            break;
+                        case "offline":
+                            status.setFill(Paint.valueOf("GREY"));
+                            break;
+                        case "busy":
+                            status.setFill(Paint.valueOf("RED"));
+                            break;
+                        case "away":
+                            status.setFill(Paint.valueOf("YELLOW"));
+                            break;
+                        default:
+                            status.setFill(Paint.valueOf("GREEN"));
+                            break;
+                    }
+                    setOnMouseClicked((e) -> {
+                        // contact.setId("contactItem");
+                        Message msg = new Message();
+                        msg.setReceiverName(item);
+                        chatController.setMsgVBox(ChatController.getMsgArea().get(item.getClient_user_name()));
+                        chatController.setReceiverClient(item);
+                        chatController.setContactData();
+                        //contact.setBackground(new BackgroundFill(Paint.valueOf("#9e6ff"), CornerRadii.EMPTY, Insets.EMPTY));
+                    });
+                    nameAndStatus.getChildren().addAll(contactname, status);
+                    contact.getChildren().addAll(contactImg, nameAndStatus);
+                    setGraphic(contact);
                 }
             }
         };

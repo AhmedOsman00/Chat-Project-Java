@@ -23,7 +23,9 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.stage.*;
+import javafx.util.Duration;
 import javax.imageio.ImageIO;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -32,6 +34,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.transform.TransformerException;
 import rmiinterfaces.*;
 import messages.*;
+import org.controlsfx.control.Notifications;
 
 public class ChatController implements Initializable, Service {
 
@@ -74,6 +77,8 @@ public class ChatController implements Initializable, Service {
     @FXML
     private Button createGrBtn;
     @FXML
+    private ImageView requests;
+    @FXML
     private ImageView profilePic;
     @FXML
     private Label personName;
@@ -82,9 +87,14 @@ public class ChatController implements Initializable, Service {
     @FXML
     private ImageView saveChat;
     @FXML
-    private ImageView send;
-    @FXML
     private ImageView attachFileIcon;
+    @FXML
+    private Button createGroup;
+    @FXML
+    private TextField groupNameField;
+    @FXML
+    private ListView<HashMap<String,ArrayList<Client>>> groupListView;
+    private final Tooltip tooltip;
     private ArrayList<Client> matchedUsers;
     private Stage primaryStage;
     private double xOffset = 0;
@@ -93,6 +103,7 @@ public class ChatController implements Initializable, Service {
     private CallServerRMI iConnection;
     private Client receiverClient;
     private ObservableList<Client> contactObservablelist;
+     private ObservableList<Group> groupObservablelist;
     private ObservableList<Client> notificationsList;
     private ObservableList<String> otherNotificationsList;
     private ObservableList<String> statusObservableList;
@@ -111,6 +122,8 @@ public class ChatController implements Initializable, Service {
     private byte[] imageInByte;
     private ArrayList<Message> messages;
     private Boolean flage;
+    private String groupName;
+    private ArrayList<Client> groupMembers;
 
     public Client getReceiverClient() {
         return receiverClient;
@@ -125,6 +138,8 @@ public class ChatController implements Initializable, Service {
     }
 
     private ChatController() {
+        groupMembers = new ArrayList<>();
+        tooltip = new Tooltip();
         messages = new ArrayList<>();
     }
 
@@ -139,6 +154,13 @@ public class ChatController implements Initializable, Service {
         });
     }
 
+    public void setGroupObservablelist(Group group) {
+        Platform.runLater(() -> {
+            this.groupObservablelist.add(group);
+            vBoxesOfMsgs.put(group.getGroup_id(), new VBox());
+        });
+    }
+
     public void setNotificationsList(Client client) {
         Platform.runLater(() -> {
             this.notificationsList.add(client);
@@ -149,13 +171,11 @@ public class ChatController implements Initializable, Service {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
+            tooltip.setText("Friend Requests");
+            Tooltip.install(requests, tooltip);
+            contactProfIcon.setFitHeight(60);
+            contactProfIcon.setFitWidth(50);
             personalData = (ClientImp) ServiceLocator.getService("clientService");
-            System.out.println(getClass().getResource("..\\images"));
-//            try {
-//                otherNotifications.getButtonCell().setGraphic(new ImageView(new Image(getClass().getResource("..\\images\\notif.png").openStream())));
-//            } catch (IOException ex) {
-//                Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
-//            }
             setClientData();
             String status[] = {"Online", "Offline", "Busy"};
             statusObservableList = FXCollections.observableArrayList(status);
@@ -172,7 +192,7 @@ public class ChatController implements Initializable, Service {
             });
             vBoxesOfMsgs = new HashMap<>();
             notificationsList = FXCollections.observableArrayList(personalData.getRequestsList());
-            colorPicker.setValue(Color.DARKGREY);
+            colorPicker.setValue(Color.BLACK);
             colorPicker.setStyle("-fx-color-label-visible: false ;");
             fontObservableList = FXCollections.observableArrayList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
             fontTypePicker.setItems(fontObservableList);
@@ -189,8 +209,14 @@ public class ChatController implements Initializable, Service {
                 vBox.setPadding(new Insets(5.0));
                 vBoxesOfMsgs.put(contactItem.getClient_user_name(), vBox);
             }
+//            for (Group group : personalData.getGroupsList()) {
+//                VBox vBox = new VBox();
+//                vBox.setSpacing(3.0);
+//                vBox.setPadding(new Insets(5.0));
+//                vBoxesOfMsgs.put(group.getGroup_id(), vBox);
+//            }
             contactListView.setCellFactory(new ContactListViewCellFactory());
-            contactListView.setItems(contactObservablelist);
+            contactListView.setItems(contactObservablelist);            
             otherNotificationsList = FXCollections.observableArrayList();
             otherNotifications.setItems(otherNotificationsList);
         } catch (RemoteException ex) {
@@ -258,7 +284,10 @@ public class ChatController implements Initializable, Service {
                     flage = true;
                     VBox addAndName = new VBox();
                     HBox notifBox = new HBox();
+                    notifBox.setSpacing(5);
                     ImageView pic = new ImageView();
+                    pic.setFitHeight(40);
+                    pic.setFitWidth(40);
                     Label name = new Label();
                     Button add = new Button("Add");
                     Label reqSent = new Label("Request Sent");
@@ -267,11 +296,7 @@ public class ChatController implements Initializable, Service {
                         Image img = new Image(new ByteArrayInputStream(matchedUser.getClient_image()), 50, 50, true, true);
                         pic.setImage(img);
                     }
-
                     for (Client contact : personalData.getContactList()) {
-                        System.out.println(matchedUser.getClient_user_name());
-                        System.out.println(contact.getClient_user_name());
-                        System.out.println(personalData.getCurrentClient().getClient_user_name());
                         if (matchedUser.getClient_user_name().equals(contact.getClient_user_name())
                                 || matchedUser.getClient_user_name().equals(personalData.getCurrentClient()
                                         .getClient_user_name())) {
@@ -299,8 +324,8 @@ public class ChatController implements Initializable, Service {
                 }
             }
             notifiPopMenu.show(addContactField.getScene().getWindow(),
-                    addContactField.getScene().getWindow().getX() + addContactField.getLayoutX() + 290,
-                    addContactField.getScene().getWindow().getY() + addContactField.getLayoutY() + addContactField.getHeight() + 65);
+                    addContactField.getScene().getWindow().getX() + addContactField.getLayoutX() + 250,
+                    addContactField.getScene().getWindow().getY() + addContactField.getLayoutY() + addContactField.getHeight() + 45);
         }
     }
 
@@ -316,33 +341,39 @@ public class ChatController implements Initializable, Service {
         messageScrollPane.setFitToWidth(true);
         typeMsgField.setDisable(false);
         saveChat.setDisable(false);
-        send.setDisable(false);
         attachFileIcon.setDisable(false);
         colorPicker.setDisable(false);
         fontSizePicker.setDisable(false);
         fontTypePicker.setDisable(false);
-        
     }
 
     public void displayMsg(Message msg) {
-        messages.add(msg);
-        Platform.runLater(() -> {
-            try {
-                if (msg.getReceiverName().getClient_user_name().equals(personalData.getCurrentClient().getClient_user_name())) {
-                    display(vBoxesOfMsgs.get(msg.getSenderName().getClient_user_name()), msg, msg.getSenderName());
-                } else {
-                    display(vBoxesOfMsgs.get(msg.getReceiverName().getClient_user_name()), msg, msg.getSenderName());
-                }
-            } catch (RemoteException ex) {
-                Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            if (!msg.getSenderName().getClient_user_name().equals(personalData.getCurrentClient().getClient_user_name())) {
+                messages.add(msg);
             }
-        });
+            Platform.runLater(() -> {
+                try {
+                    if (msg.getReceiverName().getClient_user_name().equals(personalData.getCurrentClient().getClient_user_name())) {
+                        display(vBoxesOfMsgs.get(msg.getSenderName().getClient_user_name()), msg, msg.getSenderName());
+                    } else {
+                        display(vBoxesOfMsgs.get(msg.getReceiverName().getClient_user_name()), msg, msg.getSenderName());
+                    }
+                } catch (RemoteException ex) {
+                    Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+        } catch (RemoteException ex) {
+            Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void display(VBox chatArea, Message msg, Client sender) {
         try {
             HBox msgLblWrapper = new HBox();
             Label msgLbl = new Label();
+            msgLbl.setTextFill(Paint.valueOf(msg.getFont_color()));
+            msgLbl.setFont(new Font(msg.getFont_type(), Double.parseDouble(msg.getFont_size())));
             HBox nameLblWrapper = new HBox();
             if (msg.getReceiverName().getClient_user_name().equals(personalData.getCurrentClient().getClient_user_name())) {
                 msgLblWrapper.setAlignment(Pos.CENTER_LEFT);
@@ -384,9 +415,38 @@ public class ChatController implements Initializable, Service {
         }
     }
 
-    public void createGroup() {
-        //contactListView.setCellFactory(new CreateGrListviewCellFactory());
+    public void createGroup(KeyEvent e) {
+        if (e.getCode().equals(KeyCode.ENTER)) {
+            contactListView.setCellFactory(new ListIemCreateGrCellFactory());
+            contactListView.setItems(contactObservablelist);
+        }
+    }
+
+    public void doneCreateGr() throws RemoteException {
+        Group group=new Group();
+        group.setGroup_name(groupNameField.getText());
+        groupMembers.add(personalData.getCurrentClient());
+        group.setGroup(groupMembers);        
+        iConnection.addGroup(group);
+        contactListView.setCellFactory(new ContactListViewCellFactory());
         contactListView.setItems(contactObservablelist);
+        createGrBtn.setDisable(true);
+    }
+
+    public ArrayList<Client> getGroupMembers() {
+        return groupMembers;
+    }
+
+    public void addGroupMembers(Client groupMember) {
+        createGrBtn.setDisable(false);
+        this.groupMembers.add(groupMember);
+    }
+
+    public void removeItemGroupMembers(Client groupMember) {
+        this.groupMembers.remove(groupMember);
+        if (groupMembers.isEmpty()) {
+            createGrBtn.setDisable(true);
+        }
     }
 
     public void retriveRequests() {
@@ -410,8 +470,8 @@ public class ChatController implements Initializable, Service {
             CustomMenuItem matchedUserItem = new CustomMenuItem(notifContainer);
             reqNotifiPop.getItems().add(matchedUserItem);
             reqNotifiPop.show(reqNotifications.getScene().getWindow(),
-                    reqNotifications.getScene().getWindow().getX() + reqNotifications.getLayoutX() + 290,
-                    reqNotifications.getScene().getWindow().getY() + reqNotifications.getLayoutY() + reqNotifications.getHeight() + 65);
+                    reqNotifications.getScene().getWindow().getX() + reqNotifications.getLayoutX() + 220,
+                    reqNotifications.getScene().getWindow().getY() + reqNotifications.getLayoutY() + reqNotifications.getHeight() + 45);
             acceptReqBtn.setOnAction((e) -> {
                 try {
                     System.out.println("accept request");
@@ -532,11 +592,11 @@ public class ChatController implements Initializable, Service {
             for (Message usersMsg : messages) {
                 if ((usersMsg.getReceiverName().getClient_user_name().equals(receiverClient.getClient_user_name()) || (usersMsg.getSenderName().getClient_user_name().equals(receiverClient.getClient_user_name())))) {
                     MsgType msg = obj.createMsgType();
-                    if(personalData.getCurrentClient().getClient_user_name().equalsIgnoreCase(message.getReceiverName().getClient_user_name())){                        
+                    if (personalData.getCurrentClient().getClient_user_name().equalsIgnoreCase(usersMsg.getReceiverName().getClient_user_name())) {
                         msg.setType("reciever");
-                    }else{
+                    } else {
                         msg.setType("sender");
-                    }                    
+                    }
                     msg.setFrom(usersMsg.getReceiverName().getClient_name());
                     msg.setTo(usersMsg.getSenderName().getClient_name());
                     msg.setBody(usersMsg.getMsg_context());
@@ -550,9 +610,15 @@ public class ChatController implements Initializable, Service {
                     marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
                     marsh.setProperty("com.sun.xml.internal.bind.xmlHeaders", "<?xml-stylesheet type=\"text/xsl\" href=\"Messages.xsl\"?>");
                     marsh.marshal(JAXBMsg, new FileOutputStream("messages" + LocalTime.now().getMinute() + ".xml"));
-                    System.out.println("done");
                 }
             }
+            Notifications notificationBuilder = Notifications.create()
+                    .title("Server Speaks")
+                    .text("Messeges Saved")
+                    .hideAfter(Duration.seconds(10))
+                    .position(Pos.TOP_RIGHT);
+            notificationBuilder.darkStyle();
+            notificationBuilder.showInformation();
         } catch (JAXBException ex) {
             Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (FileNotFoundException ex) {

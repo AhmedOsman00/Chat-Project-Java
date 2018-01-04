@@ -17,7 +17,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import rmiinterfaces.*;
 
 public class ClientRegController implements Initializable, Service {

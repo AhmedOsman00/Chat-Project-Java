@@ -19,7 +19,7 @@
    <children>
       <HBox fx:id="topBar" alignment="TOP_RIGHT" prefHeight="38.0" prefWidth="747.0" stylesheets="@RegForm.css">
          <children>
-            <Label fx:id="formTitle" prefHeight="21.0" prefWidth="132.0" text="Server  Home" textFill="WHITE">
+            <Label fx:id="formTitle" prefHeight="21.0" prefWidth="132.0" text="Admin Home" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>

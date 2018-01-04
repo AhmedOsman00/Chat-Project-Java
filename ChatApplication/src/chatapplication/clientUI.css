@@ -19,13 +19,8 @@
     -fx-text-fill: #383838;
 }
 #reqNotifications{
-    -fx-background-color: transparent;
-    -fx-graphic: url("../images/notif1.png");
-    -fx-border-color: #BEBEBE;
     -fx-border-radius: 3px;
-    -fx-border-style: solid;
-    -fx-border-color: #e1e1e1;
-    -fx-border-width: 1px;   
+    -fx-background-color: #A0D5E4;    
 }
 #otherNotifications{
     -fx-border-radius: 3px;

@@ -51,7 +51,7 @@
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin></ImageView>
-                        <VBox fx:id="personalData" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="47.0" prefWidth="127.0">
+                        <VBox fx:id="personalData" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="54.0" prefWidth="127.0" spacing="5.0">
                            <children>
                               <Label fx:id="personName" prefHeight="17.0" prefWidth="113.0" text="Label" textFill="#24a9e2" />
                               <Circle fx:id="clientStatus" fill="DODGERBLUE" radius="7.0" stroke="BLACK" strokeType="INSIDE" />
@@ -70,16 +70,9 @@
                               <Image url="@../images/1514648745753.png" />
                            </image>
                         </ImageView>
-                        <ComboBox fx:id="statusBox" prefHeight="28.0" prefWidth="107.0" promptText="Status" />
-                        <ComboBox fx:id="otherNotifications" prefHeight="30.0" prefWidth="133.0" promptText="Notifications" stylesheets="@clientUI.css" />  
-                        <Button fx:id="reqNotifications" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#retriveRequests" prefHeight="28.0" prefWidth="67.0">
-                            <graphic>
-      <ImageView fitHeight="25.0" fitWidth="49.0">
-        <image>
-          <Image url="@../images/notif1.png" />
-        </image>
-      </ImageView>
-   </graphic>
+                        <ComboBox fx:id="statusBox" prefHeight="28.0" prefWidth="83.0" promptText="Status" />
+                        <ComboBox fx:id="otherNotifications" prefHeight="30.0" prefWidth="120.0" promptText="Notifications" stylesheets="@clientUI.css" />  
+                        <Button fx:id="reqNotifications" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#retriveRequests" prefHeight="30.0" prefWidth="67.0" text="Requests">
                            <HBox.margin>
                               <Insets top="2.0" />
                            </HBox.margin>
@@ -88,7 +81,7 @@
                            <HBox.margin>
                               <Insets />
                            </HBox.margin></TextField>
-                        <ImageView fitHeight="26.0" fitWidth="63.0" onMouseClicked="#searchToAddUsers" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="26.0" fitWidth="63.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/search.png" />
                            </image>
@@ -107,16 +100,16 @@
          <center>
             <BorderPane fx:id="contactAndMsgPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <top>
-                  <HBox fx:id="ContactInfoHBox" prefHeight="62.0" prefWidth="501.0" spacing="10.0" BorderPane.alignment="CENTER">
+                  <HBox fx:id="ContactInfoHBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="62.0" prefWidth="561.0" spacing="10.0" BorderPane.alignment="CENTER">
                      <children>
-                        <ImageView fx:id="contactProfIcon" fitHeight="91.0" fitWidth="72.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="contactProfIcon" fitHeight="91.0" fitWidth="72.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
                            <image>
                               <Image url="@../images/female.png" />
                            </image>
                            <HBox.margin>
                               <Insets />
                            </HBox.margin></ImageView>
-                        <VBox prefHeight="55.0" prefWidth="177.0">
+                        <VBox alignment="CENTER_LEFT" prefHeight="55.0" prefWidth="177.0" spacing="5.0">
                            <children>
                               <Label fx:id="contactName" maxWidth="-Infinity" prefHeight="17.0" prefWidth="134.0" text="name" />
                               <Circle fx:id="contactStatus" fill="DODGERBLUE" radius="7.0" stroke="BLACK" strokeType="INSIDE" />
@@ -124,7 +117,7 @@
                         </VBox>
                      </children>
                      <padding>
-                        <Insets left="10.0" top="7.0" />
+                        <Insets bottom="7.0" left="10.0" top="5.0" />
                      </padding>
                   </HBox>
                </top>
@@ -133,19 +126,11 @@
                      <children>
                         <TextField fx:id="typeMsgField" disable="true" onKeyReleased="#sendMsg" prefHeight="25.0" prefWidth="224.0" promptText="Type Your Message...">
                            <HBox.margin>
-                              <Insets top="4.0" />
+                              <Insets top="9.0" />
                            </HBox.margin></TextField>
-                        <ImageView fx:id="send" disable="true" fitHeight="34.0" fitWidth="56.0" onMouseClicked="#sendMsg" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/twitter-marketing.png" />
-                           </image>
-                           <HBox.margin>
-                              <Insets right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </ImageView>
                         <ImageView fx:id="attachFileIcon" disable="true" fitHeight="30.0" fitWidth="30.0" onMouseClicked="#sendFile" pickOnBounds="true" preserveRatio="true">
                            <HBox.margin>
-                              <Insets right="2.0" top="10.0" />
+                              <Insets right="2.0" top="9.0" />
                            </HBox.margin>
                            <image>
                               <Image url="@../images/attachFile.png" />
@@ -180,19 +165,19 @@
          <left>
             <VBox prefHeight="460.0" prefWidth="187.0" BorderPane.alignment="CENTER">
                <children>
-                  <HBox fx:id="createGrBox" alignment="CENTER" prefHeight="92.0" prefWidth="209.0" spacing="10.0" style="-fx-border-color: #BEBEBE; -fx-background-color: #F4F8FB;">
+                  <HBox fx:id="createGrBox" alignment="CENTER" prefHeight="64.0" prefWidth="187.0" spacing="10.0" style="-fx-border-color: #BEBEBE; -fx-background-color: #F4F8FB;">
                      <children>
-                        <TextField fx:id="groupNameField" prefHeight="31.0" prefWidth="92.0" promptText="Enter Group Name...">
+                        <TextField fx:id="groupNameField" onKeyPressed="#createGroup" prefHeight="31.0" prefWidth="92.0" promptText="Enter Group Name...">
                            <HBox.margin>
                               <Insets left="5.0" />
                            </HBox.margin></TextField>
-                        <Button fx:id="createGrBtn" disable="true" mnemonicParsing="false" onAction="#createGroup" prefHeight="17.0" prefWidth="51.0" text="Done">
+                        <Button fx:id="createGrBtn" disable="true" mnemonicParsing="false" onAction="#doneCreateGr" prefHeight="17.0" prefWidth="51.0" text="Done">
                            <HBox.margin>
                               <Insets right="5.0" />
                            </HBox.margin></Button>
                      </children>
                   </HBox>
-                  <ListView fx:id="contactListView" prefHeight="432.0" prefWidth="209.0" />
+                  <ListView fx:id="contactListView" prefHeight="391.0" prefWidth="187.0" />
                </children>
             </VBox>
          </left>

@@ -14,12 +14,14 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
     private DataBaseConnection dbConn;
     private static ServerImpl instance;
     private ClientInt clientInt;
-
-    public static ArrayList<ClientInt> getClients() {
+    private ArrayList<Group> groups;
+    
+    public static ArrayList<ClientInt> getClients() {        
         return clients;
     }
     
     private ServerImpl() throws RemoteException {
+        groups = new ArrayList<Group>();
         clients = new ArrayList<>();
     }
     
@@ -57,6 +59,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
                 clientRef.setCurrentClient(dbConn.fillData(username));
                 clientRef.setContactList(dbConn.getContactList(username));
                 clientRef.setRequestsList(dbConn.getAllRequests(username));
+//                clientRef.setGroupsList(dbConn.getGroups(username));
                 clients.add(clientRef);
             }
         } catch (SQLException ex) {
@@ -115,6 +118,8 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
         for (ClientInt client : clients) {
             if (client.getCurrentClient().getClient_user_name().equals(receiver.getClient_user_name())) {
                 client.updateNotifList(sender);
+                System.out.println(receiver.getClient_user_name());
+                System.out.println(sender.getClient_user_name());
             }
         }
     }
@@ -179,6 +184,28 @@ public class ServerImpl extends UnicastRemoteObject implements ServerInt, Servic
                 clientuser.updateStatus(status);
             }            
         }
+    }
+    
+    @Override
+    public void addGroup(Group group) throws RemoteException {
+       dbConn.addGroup(group);
+        for (ClientInt client : clients) {
+            for (Client groupMember : group.getGroup()) {
+                if (client.getCurrentClient().getClient_user_name().equals(groupMember.getClient_user_name())) {
+                    client.addToGroupList(group);
+            }
+            }            
+        }
+    }
+    
+    @Override
+    public ArrayList<Group> getGroups(String username) {
+        try {
+            groups = dbConn.getGroups(username);           
+        } catch (SQLException ex) {
+            Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         return groups;
     }
     
 }

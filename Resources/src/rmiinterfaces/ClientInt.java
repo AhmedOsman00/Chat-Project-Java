@@ -4,6 +4,7 @@ import com.healthmarketscience.rmiio.RemoteInputStream;
 import java.io.InputStream;
 import java.rmi.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface ClientInt extends Remote {
 
@@ -25,6 +26,8 @@ public interface ClientInt extends Remote {
     
     public void addToContactList(Client client) throws RemoteException;
     
+    public void addToGroupList(Group group) throws RemoteException;
+    
     void updateNotifList(Client client) throws RemoteException;   // requests 
     
     void updateImage() throws RemoteException;
@@ -34,4 +37,8 @@ public interface ClientInt extends Remote {
     void writeToFile(InputStream stream,String name) throws RemoteException;
     
     void updateStatus(String status) throws RemoteException;
+    
+    ArrayList<Group> getGroupsList() throws RemoteException;
+    
+    void setGroupsList(ArrayList<Group> group) throws RemoteException;
 }

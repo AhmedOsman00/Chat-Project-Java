@@ -99,11 +99,11 @@ public class CallServerRMI implements Service {
         }
     }
 
-    public void sendFile(FileInputStream file, Client client,String name) {
+    public void sendFile(FileInputStream file, Client client, String name) {
         new Thread(() -> {
             try {
                 SimpleRemoteInputStream istream = new SimpleRemoteInputStream(file);
-                serverInt.forwardFile(istream.export(), client,name);
+                serverInt.forwardFile(istream.export(), client, name);
                 System.out.println("callservertrmi finished");
             } catch (RemoteException ex) {
                 Logger.getLogger(CallServerRMI.class.getName()).log(Level.SEVERE, null, ex);
@@ -112,22 +112,26 @@ public class CallServerRMI implements Service {
 
     }
 
-    public void close(){
+    public void close() {
         try {
             serverInt.unregister(personalData);
         } catch (RemoteException ex) {
             Logger.getLogger(CallServerRMI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void setStatus(String status,Client client){
+
+    public void setStatus(String status, Client client) {
         try {
-            serverInt.setStatus(status,client);
+            serverInt.setStatus(status, client);
         } catch (RemoteException ex) {
             Logger.getLogger(CallServerRMI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
+    public void addGroup(Group group) throws RemoteException {
+        serverInt.addGroup(group);
+    }
+
     @Override
     public String getName() {
         return "rmiService";

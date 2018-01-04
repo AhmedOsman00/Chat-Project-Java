@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +27,7 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
     private ArrayList<Client> contactList;
     private Client currentClient;
     private ArrayList<Client> requestsList;
+    private ArrayList<Group> groupsList;
     private static ClientImp instance;
     private final ChatController chatController = (ChatController) ServiceLocator.getService("chatController");
 
@@ -94,6 +96,16 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
     }
 
     @Override
+    public ArrayList<Group> getGroupsList() {
+        return groupsList;
+    }
+
+    @Override
+    public void setGroupsList(ArrayList<Group> groupsList) {
+        this.groupsList = groupsList;
+    }
+
+    @Override
     public String getName() {
         return "clientService";
     }
@@ -115,7 +127,6 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
                     .position(Pos.TOP_RIGHT);
             notificationBuilder.darkStyle();
             notificationBuilder.showInformation();
-            System.out.println("Finished");
         });
     }
 
@@ -210,5 +221,21 @@ public class ClientImp extends UnicastRemoteObject implements ClientInt, Service
     @Override
     public void updateStatus(String status) throws RemoteException {
         chatController.updateStatus(status);
+    }
+
+    @Override
+    public void addToGroupList(Group group) throws RemoteException {
+       groupsList.add(group);
+        chatController.setGroupObservablelist(group);
+        Platform.runLater(() -> {
+            Notifications notificationBuilder = Notifications.create()
+                    .title("Server Speaks")
+                    .text(group.getGroup_name() + " created.")
+                    .hideAfter(Duration.seconds(10))
+                    .position(Pos.TOP_RIGHT);
+            notificationBuilder.darkStyle();
+            notificationBuilder.showInformation();
+            System.out.println("group Finished");
+        });
     }
 }

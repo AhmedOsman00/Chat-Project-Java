@@ -4,9 +4,9 @@ import com.healthmarketscience.rmiio.RemoteInputStream;
 import java.io.FileInputStream;
 import java.rmi.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface ServerInt extends Remote {
-    
 
     void tellOthers(Message msg) throws RemoteException;
 
@@ -23,12 +23,16 @@ public interface ServerInt extends Remote {
     void addToRequests(Client client, Client currClient) throws RemoteException;
 
     Boolean checkUserName(String username) throws RemoteException;
-    
+
     void signUp(ClientRegData clientRegData) throws RemoteException;
+
+    void addImage(byte[] imageInByte, Client client) throws RemoteException;
+
+    void forwardFile(RemoteInputStream data, Client client, String name) throws RemoteException;
+
+    void setStatus(String status, Client client) throws RemoteException;
+
+    void addGroup(Group group) throws RemoteException;
     
-    void addImage(byte[] imageInByte, Client client)throws RemoteException;
-    
-    void forwardFile(RemoteInputStream data,Client client,String name) throws RemoteException; 
-    
-    void setStatus(String status,Client client)throws RemoteException; 
+    ArrayList<Group> getGroups(String username) throws RemoteException;
 }

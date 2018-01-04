@@ -23,12 +23,17 @@ public class DataBaseConnection implements Service {
     private OraclePreparedStatement oraclePreparedStatement;
     private Statement stmt;
     private ResultSet resultSet;
+    private ResultSet resultSet2;
     private static final DataBaseConnection instance = new DataBaseConnection();
     private ServerImpl serverImpl;
     private ArrayList<Client> contactlist;
     private ArrayList<Client> requestsList;
+    private ArrayList<Client> groupMembers;
+    private ArrayList<Group> groups;
 
     private DataBaseConnection() {
+        groupMembers = new ArrayList<Client>();
+        groups = new ArrayList<>();
         serverImpl = (ServerImpl) ServiceLocator.getService("serverImpl");
         try {
             DriverManager.registerDriver(new OracleDriver());
@@ -101,7 +106,7 @@ public class DataBaseConnection implements Service {
         }
         return false;
     }
-    
+
     public void insertClientInfo(ClientRegData clientRegData) {
         try {
             preparedStmt = connection.prepareStatement("INSERT INTO client_data ("
@@ -147,12 +152,12 @@ public class DataBaseConnection implements Service {
         return null;
     }
 
-    public void setStatus(String status,Client client) {
+    public void setStatus(String status, Client client) {
         try {
             preparedStmt = connection.prepareStatement("UPDATE client_data set client_status = ? where client_user_name = ?",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            preparedStmt.setString(1,status);  
-            preparedStmt.setString(2,client.getClient_user_name());  
+            preparedStmt.setString(1, status);
+            preparedStmt.setString(2, client.getClient_user_name());
             preparedStmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -218,7 +223,6 @@ public class DataBaseConnection implements Service {
             preparedStmt.setString(1, receiver.getClient_user_name());
             preparedStmt.executeUpdate();
             removeRequest(sender.getClient_user_name(), receiver.getClient_user_name());
-            System.out.println("accepted");
         } catch (SQLException ex) {
             Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -263,24 +267,6 @@ public class DataBaseConnection implements Service {
         }
     }
 
-    public int getOnUsersNum() throws SQLException {
-        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        resultSet = stmt.executeQuery("select count(*) from client_data where client_status = 'online'");
-        if (resultSet.next()) {
-            return resultSet.getInt(1);
-        }
-        return 0;
-    }
-
-    public int getOffUsersNum() throws SQLException {
-        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        resultSet = stmt.executeQuery("select count(*) from client_data where client_status = 'offline'");
-        if (resultSet.next()) {
-            return resultSet.getInt(1);
-        }
-        return 0;
-    }
-    
     public int getAllUsersNum() throws SQLException {
         stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         resultSet = stmt.executeQuery("select count(*) from client_data");
@@ -289,7 +275,47 @@ public class DataBaseConnection implements Service {
         }
         return 0;
     }
-    
+
+    public void addGroup(Group group) {
+        try {
+            int sequence = 0;
+            stmt = connection.createStatement();
+            resultSet = stmt.executeQuery("SELECT grpseq.nextval FROM dual");
+            if (resultSet.next()) {
+                sequence = resultSet.getInt(1);
+            }
+            preparedStmt = connection.prepareStatement("INSERT INTO group_data (gr_id, group_name, group_user_name)"
+                    + "VALUES (?,?,?)", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            for (Client groupMember : group.getGroup()) {
+                preparedStmt.setString(1, String.valueOf(sequence) + "_" + group.getGroup_name());
+                preparedStmt.setString(2, group.getGroup_name());
+                preparedStmt.setString(3, groupMember.getClient_name());
+                preparedStmt.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public ArrayList<Group> getGroups(String username) throws SQLException {
+        stmt = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        resultSet = stmt.executeQuery("select * from group_data where client_user_name = " + "'" + username + "'");
+        Client client = null;
+        Group group = null;
+        while (resultSet.next()) {
+            resultSet2 = stmt.executeQuery("select * from group_data where gr_id = "
+                    + resultSet.getString("gr_id"));
+            while (resultSet2.next()) {
+                client = new Client();
+                client.setClient_user_name(resultSet2.getString(username));
+                groupMembers.add(client);
+            }          
+            groups.add(group);
+        }
+        return groups;
+    }
+
     @Override
     public String getName() {
         return "dbConn";
